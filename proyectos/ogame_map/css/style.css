@@ -1,0 +1,124 @@
+/* normaler Link */
+
+	A.link:link { COLOR:#c4c4c4; FONT-FAMILY:Tahoma,sans-serif; font-size:8pt;font-weight:bold; TEXT-DECORATION:none;}
+	A.link:visited { COLOR:#c4c4c4; FONT-FAMILY:Tahoma,sans-serif; font-size:8pt;font-weight:bold; TEXT-DECORATION:none;}
+	A.link:active { COLOR:#c4c4c4; FONT-FAMILY:Tahoma,sans-serif; font-size:8pt;font-weight:bold; TEXT-DECORATION:underline;}
+	A.link:hover { COLOR:#c4c4c4; FONT-FAMILY:Tahoma,sans-serif; font-size:8pt;font-weight:bold; TEXT-DECORATION:underline;}
+	A.link:body { COLOR:#c4c4c4; FONT-FAMILY:Tahoma,sans-serif; font-size:8pt;font-weight:bold; TEXT-DECORATION:none;}
+
+	A.pagelink:link { COLOR:#c4c4c4; FONT-FAMILY:Tahoma,sans-serif; font-size:10pt;font-weight:none; TEXT-DECORATION:none;}
+	A.pagelink:visited { COLOR:#c4c4c4; FONT-FAMILY:Tahoma,sans-serif; font-size:10pt;font-weight:none; TEXT-DECORATION:none;}
+	A.pagelink:active { COLOR:#c4c4c4; FONT-FAMILY:Tahoma,sans-serif; font-size:10pt;font-weight:none; TEXT-DECORATION:underline;}
+	A.pagelink:hover { COLOR:#c4c4c4; FONT-FAMILY:Tahoma,sans-serif; font-size:10pt;font-weight:none; TEXT-DECORATION:underline;}
+	A.pagelink:body { COLOR:#c4c4c4; FONT-FAMILY:Tahoma,sans-serif; font-size:10pt;font-weight:none; TEXT-DECORATION:none;}
+
+	A.resultlink:link { COLOR:#c4c4c4; font-size:8pt;font-weight:none; TEXT-DECORATION:none;}
+	A.resultlink:visited { COLOR:#c4c4c4; font-size:8pt;font-weight:none; TEXT-DECORATION:none;}
+	A.resultlink:active { COLOR:#c4c4c4; font-size:8pt;font-weight:none; TEXT-DECORATION:underline;}
+	A.resultlink:hover { COLOR:#c4c4c4; font-size:8pt;font-weight:none; TEXT-DECORATION:underline;}
+	A.resultlink:body { COLOR:#c4c4c4; font-size:8pt;font-weight:none; TEXT-DECORATION:none;}
+
+	A.menulink:link { COLOR:#c4c4c4; font-size:8pt;font-weight:none; TEXT-DECORATION:none;}
+	A.menulink:visited { COLOR:#c4c4c4; font-size:8pt;font-weight:none; TEXT-DECORATION:none;}
+	A.menulink:active { COLOR:#c4c4c4; font-size:8pt;font-weight:none; TEXT-DECORATION:underline;}
+	A.menulink:hover { COLOR:#c4c4c4; font-size:8pt;font-weight:none; TEXT-DECORATION:underline;}
+	A.menulink:body { COLOR:#c4c4c4; font-size:8pt;font-weight:none; TEXT-DECORATION:none;}
+
+	table.menu {
+
+		background-color: #415680;
+		border-spacing: 1px 2px;
+	  	font-size: 8pt;
+	  	font-family: Tahoma,sans-serif;
+	  	margin-top:30px;
+	  	margin-left:10px;
+	}
+
+	table.standard {
+		background-color: #415680;
+		border: 1px #415680 solid;
+	  	font-size: 8pt;
+	  	font-family: Tahoma,sans-serif;
+	}
+
+	td {
+		font-family: Tahoma,sans-serif;
+		font-size: 8pt;
+	}
+
+	td.menu {
+		text-align: center;
+	}
+
+	.copyright {
+		COLOR:#c4c4c4; background-color:#344566; font-family: Tahoma,sans-serif; font-size: 10pt; font-weight:bold;
+	}
+	.mod { font-size: 8pt; }
+
+	.currentpage { COLOR:#c4c4c4; font-weight:bold; font-size:11pt; }
+	.firstcolor { COLOR:#c4c4c4; background-color:#344566; }
+	.mainframe { padding-top:50px; COLOR:#c4c4c4; font-family: Tahoma,sans-serif; font-size:7pt;}
+	.tblhead { COLOR:#c4c4c4; background-color:#203041;font-weight:bold; text-align:center; }
+	
+	.nap { color: lightgreen; }
+	.ally { color: lightblue; }
+	.war { color: red; }
+	.boycott { color: mediumpurple; }
+	.neutral { color: snow; }
+	.nothing { color: #c4c4c4; }
+	.own { color: hotpink; }
+	.wing { color: moccasin; }
+	
+	.bg_nap { background-color: lightgreen; }
+	.bg_ally { background-color: lightblue; }
+	.bg_war { background-color: red; }
+	.bg_boycott { background-color: mediumpurple; }
+	.bg_neutral { background-color: snow; }
+	.bg_nothing { background-color: #c4c4c4; }
+	.bg_own { background-color: hotpink; }
+	.bg_wing { background-color: moccasin; }
+		
+	.truespio { color: lightgreen; }
+	.falsespio { color: red; }
+	
+	.success { color:lightgreen; }
+	.failure { color:orange; }
+	
+	.public { color:lightgreen; }
+	.private { color:FFFFCC; }
+	
+	
+	.farbe1 { COLOR:#a0f0a0; TEXT-DECORATION:none; font-family: Tahoma,sans-serif; font-size:8pt;}
+	.farbe2 { COLOR:#70c070; TEXT-DECORATION:none; font-family: Tahoma,sans-serif; font-size:8pt;}
+	.farbe3 { COLOR:409040; TEXT-DECORATION:none; font-family: Tahoma,sans-serif; font-size:8pt;}
+	.farbe4 { COLOR:yellow; TEXT-DECORATION:none; font-family: Tahoma,sans-serif; font-size:8pt;}
+	.farbe5 { COLOR:#FF9900; TEXT-DECORATION:none; font-family: Tahoma,sans-serif; font-size:8pt;}
+	.farbe6 { COLOR:red; TEXT-DECORATION:none; font-family: Tahoma,sans-serif; font-size:8pt;}
+	.farbe7 { COLOR:blue; TEXT-DECORATION:none; font-family: Tahoma,sans-serif; font-size:8pt;}
+
+	.tblborder {BACKGROUND-COLOR: #415680;}
+
+	.button { background-color:#344566; color:#c4c4c4; width: auto; border: 1px #415680 solid; font-size: 9pt; font-family: Tahoma,sans-serif; text-align: center; }
+	.textfield { background-color:#344566; color:#c4c4c4; font-size:8pt; border: 1px #415680 solid; width: auto; text-align:left;}
+	.pulldown_code { background-color:#415680; color:#c4c4c4; border: 1px #415680 solid; font-size:8pt;}
+
+	/* body-tag Code */
+	body {
+		background-color: #203041;
+		background-attachment: fixed;
+		background-repeat: no-repeat;
+		background-position: top right;
+		margin-left: 0;
+		margin-top: 0;
+		margin-height: 0;
+		margin-width: 0;
+		text-color: #FFFFFF;
+		font-family: Tahoma,sans-serif;
+		font-size: 8pt;
+	}
+
+	td.c {
+		font-weight          : bold;
+		color                : #c4c4c4;
+		padding-left         : 3px;
+	}

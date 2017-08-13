@@ -1,0 +1,67 @@
+body { background: #f9fcfe; }
+#login h1 {
+	text-align: center;
+	margin: 0px;
+}
+input:focus {
+	background: #fff;
+	border: 1px solid #686868;
+}
+label {	cursor: pointer; }
+p { line-height: 130%; }
+input {
+	background: #f4f4f4;
+	border: 1px solid #b2b2b2;
+	color: #000;
+	font: 13px Verdana, Arial, Helvetica, sans-serif;
+	margin: 1px;
+	padding: 3px;
+	width: 85%;
+}
+.submit input {
+	background: #f4f4f4;
+	color: #333;
+	padding: 0.5em;
+	font-size: 1em;
+	width: 30%;
+}
+.submit { text-align: right; }
+#login {
+	background: #fff;
+	border: 1px solid #a2a2a2;
+	margin: 1em auto;
+	padding: 1.5em;
+	width: 20em;
+}
+.error {
+	background: #FFEFF7;
+	border: 1px solid #c69;
+	margin: 1em 5% 10px;
+	padding: 1em;
+}
+.success {
+	background-color: #ccffcc;
+	border: 1px solid #090;
+	margin: 1em 5% 10px;
+	padding: 1em;
+}
+#ayuda {
+	position: absolute;
+	top: 5px;
+	left: 5px;
+	clear: left;
+	font: 12px Verdana, Arial, Helvetica, sans-serif;
+	text-align: justify;
+}
+#menu {
+	z-index: 2;
+	position: relative;
+	background-color: #fff;
+	border: 1px solid #090;
+	width: 500px;
+	padding: 1em;
+}
+#menu li { 
+	margin-top: 1em; 
+	padding-right: 2em; 
+}

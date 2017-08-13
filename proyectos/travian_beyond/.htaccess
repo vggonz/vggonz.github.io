@@ -1,0 +1,29 @@
+RewriteEngine on
+RewriteBase /proyectos/travian_beyond/
+
+RewriteCond %{HTTP_REFERER} !^$
+RewriteCond %{HTTP_REFERER} !denibol.com [NC]
+RewriteCond %{HTTP:Accept-Language} !(es)
+RewriteRule ^.*\.user\.js$ error.en.html [R,L,NC]
+
+RewriteCond %{HTTP_REFERER} !^$
+RewriteCond %{HTTP_REFERER} !denibol.com [NC]
+RewriteCond %{HTTP:Accept-Language} (es)
+RewriteRule ^.*\.user\.js$ error.es.html [R,L,NC]
+
+RewriteCond %{HTTP_USER_AGENT} MSIE [NC]
+RewriteCond %{HTTP:Accept-Language} (es)
+RewriteRule ^.*\.user\.js$ error.es.html [R,L,NC]
+
+RewriteCond %{HTTP_USER_AGENT} MSIE [NC]
+RewriteCond %{HTTP:Accept-Language} !(es)
+RewriteRule ^.*\.user\.js$ error.en.html [R,L,NC]
+
+RewriteCond %{HTTP_REFERER} denibol.com [NC]
+RewriteRule travian3.user.js http://vggonz.googlepages.com/travian3.user.js [L]
+
+#RewriteCond ${HTTP_REFERER} !^$
+#RewriteCond ${HTTP_REFERER} !plus.php
+#RewriteRule version\.php$ - [F,L]
+
+#RewriteRule version\.php$ version.png [L,NC]
