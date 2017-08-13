@@ -1,0 +1,58 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+	<title>Ogame Map</title>
+	<script src="http://www.google-analytics.com/urchin.js" type="text/javascript"></script>
+	<script type="text/javascript">
+		_uacct = "UA-88863-1";
+		urchinTracker();
+	</script>
+</head>
+<body>
+<h2>Ogame Map</h2>
+<p>Utilidad de cartografia para el juego de navegador <a href="http://www.ogame.com.es">Ogame</a>:</p>
+<ul>
+	<li>Acceso a base de datos
+		<ul>
+			<li>Herramientas genericas</li>
+			<li><a href="include/db_mysql.phps">Fuente</a> del acceso a MySQL</li>
+			<li><a href="include/functions.phps">Fuente</a> de las funciones de paginacion de resultados</li>
+		</ul>
+	</li>
+	<li>Indexacion en base de datos
+		<ul>
+			<li>Ejecucion manual por linea de comandos</li>
+			<li>Necesita la cookie de sesion que se encuentra en todos los enlaces del juego</li>
+			<li>Ejemplo: "<i>php admin_cmd.php session universo galaxia1 galaxia2 sistema1 sistema2</i>" indizaria los sistemas comprendidos entre <i>sistema1</i> y <i>sistema2</i> para todas las galaxias entre <i>galaxia1</i> y <i>galaxia2</i> en el servidor de juego del universo 18.</li>
+			<li>Solo funciona con los servidores hispanos de juego accesibles desde <a href="http://ogame.com.es">http://ogame.com.es</a></li>
+			<li>Guarda la fecha y hora de inseracion para conocer la frescura de los datos</li>
+			<li><a href="admin_cmd.phps">Fuente</a></li>
+			<li><a href="universos.sql">Descripcion SQL</a> de la lista de universos conocidos</li>
+			<li><a href="uni.sql">Descripcion SQL</a> de la tabla de los planetas de un servidor</li>
+			<li><a href="uni_jugadores.sql">Descripcion SQL</a> de la tabla de los jugadores de un servidor</li>
+			<li><a href="uni_alianzas.sql">Descripcion SQL</a> de la tabla de alianzas de un servidor</li>
+	</li>
+	<li>Buscador
+		<ul>
+			<li>Busca entre los resultados de la indexacion</li>
+			<li>Parametrizado por etiqueta de la alianza, nombre del jugador, nombre del planeta, posicion, ranking y estado (inactivo, vacaciones, etc)</li>
+			<li>Resultados paginados</li>
+			<li><a href="buscador.phps">Fuente</a></li>
+		</ul>
+	</li>
+	<li>Userscript
+		<ul>
+			<li>Script para los informes y mensajes</li>
+			<li>Muestra para cada informe de espionaje el robo teorico a partir de los recursos</li>
+			<li>Calcula las naves de carga necesarias para recogerlos y su porcentaje de carga</li>
+			<li>A partir de las naves en un planeta, calcula los escombros teoricos que producirian y los recicladores necesarios para recogerlos junto con su porcentaje de carga</li>
+			<li>Para todos los mensajes muestra un enlace para ocultar o desplegar el cuerpo de cualquier mensaje</li>
+			<li>Adaptado para la version 0.73e (aunque puede que funcione para otras versiones del juego)</li>
+			<li>Solo valido para los servidores hispanos de <a href="http://ogame.com.es">http://ogame.com.es</a></li>
+			<li>Solo funciona con Firefox y GreaseMonkey (no con Opera)</li>
+			<li><a href="ogame.user.js">Descargar</a></li>
+		</ul>
+	</li>
+</ul>
+</body>
+</html>

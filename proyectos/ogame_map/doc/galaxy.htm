@@ -1,0 +1,760 @@
+<html>
+ <head>
+  <link rel="stylesheet" type="text/css" href="css/default.css"> </head>
+  <link rel="stylesheet" type="text/css" href="http://ogame301.de/epicblue/formate.css"> </head>
+  <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1" />
+  <script  language="JavaScript">
+    function galaxy_submit(value) {
+      document.getElementById('auto').name = value;
+      document.getElementById('galaxy_form').submit();
+    }
+
+    function fenster(target_url,win_name) {
+      var new_win = window.open(target_url,win_name,'resizable=yes,scrollbars=yes,menubar=no,toolbar=no,width=640,height=480,top=0,left=0');
+new_win.focus();
+    }
+  </script>
+  <script language="JavaScript" src="js/tw-sack.js"></script>
+  <script type="text/javascript">
+var ajax = new sack();
+var strInfo = "";
+      
+function whenLoading(){
+  //var e = document.getElementById('fleetstatus'); 
+  //e.innerHTML = "Enviando flota...";
+}
+      
+function whenLoaded(){
+  //    var e = document.getElementById('fleetstatus'); 
+  // e.innerHTML = "Flota enviada...";
+}
+      
+function whenInteractive(){
+  //var e = document.getElementById('fleetstatus'); 
+  // e.innerHTML = "obteniendo datos...";
+}
+            
+/* 
+   We can overwrite functions of the sack object easily. :-)
+   This function will replace the sack internal function runResponse(), 
+   which normally evaluates the xml return value via eval(this.response).
+*/
+function whenResponse(){
+
+ /*
+ *
+ *  600   OK
+ *  601   no planet exists there
+ *  602   no moon exists there
+ *  603   player is in noob protection
+ *  604   player is too strong
+ *  605   player is in u-mode 
+ *  610   not enough espionage probes, sending x (parameter is the second return value)
+ *  611   no espionage probes, nothing send
+ *  612   no fleet slots free, nothing send
+ *  613   not enough deuterium to send a probe
+ *
+ */
+  
+  // the first three digit long return value
+  retVals = this.response.split(" ");
+  // and the other content of the response
+  // but since we only got it if we can send some but not all probes 
+  // theres no need to complicate things with better parsing
+
+  // each case gets a different table entry, no language file used :P
+  switch(retVals[0]) {
+  case "600":
+    addToTable("done", "success");
+        break;
+  case "601":
+    addToTable("ha ocurrido un error mientras se enviaba", "error");
+    break;
+  case "602":
+    addToTable("error, no hay luna", "error");
+    break;
+  case "603":
+    addToTable("error, el jugador está bajo la protección de novatos", "error");
+    break;
+  case "604":
+    addToTable("error, el jugador es demasiado fuerte", "error");
+    break;
+  case "605":
+    addToTable("error, el jugador está en modo vacaciones", "vacation");
+    break;
+  case "610":
+    addToTable("error, solo "+retVals[1]+" sondas disponibles, enviando", "notice");
+    break;
+  case "611":
+    addToTable("error, no hay sondas de espionaje disponibles", "error");
+    break;
+  case "612":
+    addToTable("error, no puedes enviar más flotas", "error");
+    break;
+  case "613":
+    addToTable("error, no tienes suficiente deuterio", "error");
+    break;
+  case "614":
+    addToTable("No hay planeta", "error");
+    break;
+  case "615":
+    addToTable("error, no hay suficiente combustible", "error");
+    break;
+  case "616":
+    addToTable("multialarma", "error");
+    break;
+  }
+}
+
+function doit(order, galaxy, system, planet, planettype, shipcount){
+  strInfo = "Enviando "+shipcount+" sonda"+(shipcount>1?"s":"")+" a "+galaxy+":"+system+":"+planet+"...";
+    
+    ajax.requestFile = "flottenversand.php";
+
+    // no longer needed, since we don't want to write the cryptic
+    // response somewhere into the output html
+    //ajax.element = 'fleetstatus';
+    //ajax.onLoading = whenLoading;
+    //ajax.onLoaded = whenLoaded; 
+    //ajax.onInteractive = whenInteractive;
+
+    // added, overwrite the function runResponse with our own and
+    // turn on its execute flag
+    ajax.runResponse = whenResponse;
+    ajax.execute = true;
+
+    ajax.setVar("session", "475a011fd489");
+    ajax.setVar("order", order);
+    ajax.setVar("galaxy", galaxy);
+    ajax.setVar("system", system);
+    ajax.setVar("planet", planet);
+    ajax.setVar("planettype", planettype);
+    ajax.setVar("shipcount", shipcount);
+    ajax.setVar("speed", 10);
+    ajax.setVar("reply", "short");
+    ajax.runAJAX();
+}
+
+/*
+ * This function will manage the table we use to output up to three lines of
+ * actions the user did. If there is no action, the tr with id 'fleetstatusrow'
+ * will be hidden (display: none;) - if we want to output a line, its display 
+ * value is cleaned and therefore its visible. If there are more than 2 lines 
+ * we want to remove the first row to restrict the history to not more than 
+ * 3 entries. After using the object function of the table we fill the newly
+ * created row with text. Let the browser do the parsing work. :D
+ */
+function addToTable(strDataResult, strClass) {
+  var e = document.getElementById('fleetstatusrow');
+  var e2 = document.getElementById('fleetstatustable');
+
+  // make the table row visible
+  e.style.display = '';
+  
+  if(e2.rows.length > 2) {
+    e2.deleteRow(2);
+  }
+  
+  var row = e2.insertRow('test');
+
+  var td1 = document.createElement("td");
+  var td1text = document.createTextNode(strInfo);
+  td1.appendChild(td1text);
+
+  var td2 = document.createElement("td");
+
+  var span = document.createElement("span");
+  var spantext = document.createTextNode(strDataResult);
+
+  var spanclass = document.createAttribute("class");
+  spanclass.nodeValue = strClass;
+  span.setAttributeNode(spanclass);
+
+  span.appendChild(spantext);
+  td2.appendChild(span);
+  
+  row.appendChild(td1);
+  row.appendChild(td2);
+}
+
+function changeSlots(slotsInUse) {
+  var e = document.getElementById('slots');
+  e.innerHTML = slotsInUse;
+}
+
+function setShips(ship, count) {
+  var e = document.getElementById(ship);
+  e.innerHTML = count;
+}
+
+</script>
+ </head>
+ <body onmousemove="tt_Mousemove(event);">
+  <center>
+<form action="galaxy.php?session=475a011fd489" method="post" id="galaxy_form">
+<input type="hidden" name="session" value="475a011fd489">
+<input type="hidden" id="auto" value="dr">
+<table border="0"> 
+  <tr>
+    <td>
+      <table>
+        <tr>
+         <td class="c" colspan="3">Galaxia</td>
+        </tr>
+        <tr>
+          <td class="l"><input type="button" name="galaxyLeft" value="<-" onClick="galaxy_submit('galaxyLeft')"></td>
+          <td class="l"><input type="text" name="galaxy" value="6" size="5" maxlength="3" tabindex="1">
+          <td class="l"><input type="button" name="galaxyRight" value="->" onClick="galaxy_submit('galaxyRight')"></td>
+        </tr>
+       </table>
+      </td>
+      <td>
+       <table>
+        <tr>
+         <td class="c" colspan="3">Sistema solar</td>
+        </tr>
+         <tr>
+          <td class="l"><input type="button" name="systemLeft" value="<-" onClick="galaxy_submit('systemLeft')"></td>
+          <td class="l"><input type="text" name="system" value="156" size="5" maxlength="3" tabindex="2">
+          <td class="l"><input type="button" name="systemRight" value="->" onClick="galaxy_submit('systemRight')"></td>
+         </tr>
+        </table>
+       </td>
+      </tr>
+      <tr>
+        <td colspan="2" align="center"> <input type="submit" value="Mostrar"></td>
+      </tr>
+     </table>
+<iframe id='ab5f1bbe' name='ab5f1bbe' src='http://ads.gameforgeads.de/adframe.php?n=ab5f1bbe&amp;what=zone:581' framespacing='0' frameborder='no' scrolling='no' width='468' height='60'></iframe>
+</form>
+  <table width="569">
+<tr>
+  <td class="c" colspan="8">Sistema solar 6:156</td>
+</tr>
+   <tr>
+    <td class="c">Pos</td>
+    <td class="c">Planeta</td>
+    <td class="c">Nombre (Actividad)</td>
+    <td class="c">Luna</td>
+    <td class="c">Escombros</td>
+    <td class="c">Jugador (Estado)</td>
+    <td class="c">Alianza</td>
+ <td class="c">Acciones</td>   </tr>
+       <tr>
+    <th width="30">
+      <a href="#"  tabindex="3" >1</a>
+    </th>
+    <th width="30">
+     <a style="cursor:pointer" onmouseover="this.T_WIDTH=250;this.T_OFFSETX=-110;this.T_OFFSETY=-30;this.T_STICKY=true;this.T_TEMP=5000;this.T_STATIC=true;return escape('&lt;table width=\'240\'&gt;&lt;tr&gt;&lt;td class=\'c\' colspan=\'2\'&gt;Planeta Colonia [6:156:1]&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;th width=\'80\'&gt;&lt;img src=\'http://ogame301.de/epicblue/planeten/small/s_trockenplanet01.jpg\' height=\'75\' width=\'75\'/&gt;&lt;/th&gt;&lt;th style=\'text-align: left\'&gt;&lt;a href=\'#\' onclick=\'doit(6, 6, 156, 1, 1, 2)\'&gt;Espiar&lt;/a&gt;&lt;br /&gt;&lt;br /&gt;&lt;a href=\'flotten1.php?session=475a011fd489&galaxy=6&system=156&planet=1&planettype=1&target_mission=1\'&gt;Atacar&lt;/a&gt;&lt;br /&gt;&lt;a href=\'flotten1.php?session=475a011fd489&galaxy=6&system=156&planet=1&planettype=1&target_mission=3\'&gt;Transportar&lt;/a&gt;&lt;/th&gt;&lt;/tr&gt;&lt;/table&gt;');">
+      <img src="http://ogame301.de/epicblue/planeten/small/s_trockenplanet01.jpg" height="30" width="30"/></a>
+</th>
+<th width="130" style='white-space: nowrap;'>
+Colonia</th>
+<th width="30" style='white-space: nowrap;'>
+ 
+   </th> 
+    <th width="30">
+
+ 
+   </th>
+    <th width="150"> 
+
+     <a style="cursor:pointer" onmouseover="this.T_WIDTH=200;this.T_OFFSETX=-20;this.T_OFFSETY=-30;this.T_STICKY=true;this.T_TEMP=5000;return escape('&lt;table width=\'190\'&gt;&lt;tr&gt;&lt;td class=\'c\' colspan=\'2\'&gt;Jugador winccl&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;a href=\'writemessages.php?session=475a011fd489&messageziel=125523\'&gt;Escribir mensaje&lt;/a&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;a href=\'buddy.php?session=475a011fd489&a=2&u=125523\'&gt;Solicitud de compañeros&lt;/a&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;');"><span class="normal">winccl</span></a>
+
+</th>
+<th width="80"> 
+<a style="cursor:pointer" onmouseover="this.T_WIDTH=250;this.T_OFFSETX=-30;this.T_OFFSETY=-30;this.T_STICKY=true;this.T_TEMP=5000;return escape('&lt;table width=\'240\'&gt;&lt;tr&gt;&lt;td class=\'c\'&gt;Alianza SOXP en la posición 201 con 12 Miembro(s)&lt;/td&gt;&lt;/tr&gt;&lt;th&gt;&lt;table&gt;&lt;tr&gt;&lt;td&gt;&lt;a href=\'ainfo.php?session=475a011fd489&a=3858\'&gt;Ver página de alianza&lt;/a&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;a href=\'stat.php?session=475a011fd489&start=201&who=ally\'&gt;Ver en estadísticas&lt;/a&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/th&gt;&lt;/table&gt;');">
+
+   SOXP </a>
+ </th>
+<th width="125" style='white-space: nowrap;'>
+<a style="cursor:pointer" onclick="javascript:doit(6, 6, 156, 1, 1, 2);"><img src="http://ogame301.de/epicblue/img/e.gif" border="0" alt="Espiar" title="Espiar" /></a>
+<a href="writemessages.php?session=475a011fd489&messageziel=125523"><img src="http://ogame301.de/epicblue/img/m.gif" border="0" alt="Escribir mensaje" title="Escribir mensaje" /></a>
+<a href="buddy.php?session=475a011fd489&a=2&u=125523"><img src="http://ogame301.de/epicblue/img/b.gif" border="0" alt="Solicitud de compañeros" title="Solicitud de compañeros" /></a>
+</th>
+</tr>
+    <tr>
+    <th width="30">
+      <a href="#"  tabindex="4" >2</a>
+    </th>
+    <th width="30">
+     <a style="cursor:pointer" onmouseover="this.T_WIDTH=250;this.T_OFFSETX=-110;this.T_OFFSETY=-30;this.T_STICKY=true;this.T_TEMP=5000;this.T_STATIC=true;return escape('&lt;table width=\'240\'&gt;&lt;tr&gt;&lt;td class=\'c\' colspan=\'2\'&gt;Planeta EstigmaII [6:156:2]&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;th width=\'80\'&gt;&lt;img src=\'http://ogame301.de/epicblue/planeten/small/s_trockenplanet01.jpg\' height=\'75\' width=\'75\'/&gt;&lt;/th&gt;&lt;th style=\'text-align: left\'&gt;&lt;a href=\'#\' onclick=\'doit(6, 6, 156, 2, 1, 2)\'&gt;Espiar&lt;/a&gt;&lt;br /&gt;&lt;br /&gt;&lt;a href=\'flotten1.php?session=475a011fd489&galaxy=6&system=156&planet=2&planettype=1&target_mission=1\'&gt;Atacar&lt;/a&gt;&lt;br /&gt;&lt;a href=\'flotten1.php?session=475a011fd489&galaxy=6&system=156&planet=2&planettype=1&target_mission=3\'&gt;Transportar&lt;/a&gt;&lt;/th&gt;&lt;/tr&gt;&lt;/table&gt;');">
+      <img src="http://ogame301.de/epicblue/planeten/small/s_trockenplanet01.jpg" height="30" width="30"/></a>
+</th>
+<th width="130" style='white-space: nowrap;'>
+EstigmaII</th>
+<th width="30" style='white-space: nowrap;'>
+ 
+   </th> 
+    <th width="30">
+
+ 
+   </th>
+    <th width="150"> 
+
+     <a style="cursor:pointer" onmouseover="this.T_WIDTH=200;this.T_OFFSETX=-20;this.T_OFFSETY=-30;this.T_STICKY=true;this.T_TEMP=5000;return escape('&lt;table width=\'190\'&gt;&lt;tr&gt;&lt;td class=\'c\' colspan=\'2\'&gt;Jugador winccl&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;a href=\'writemessages.php?session=475a011fd489&messageziel=125523\'&gt;Escribir mensaje&lt;/a&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;a href=\'buddy.php?session=475a011fd489&a=2&u=125523\'&gt;Solicitud de compañeros&lt;/a&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;');"><span class="normal">winccl</span></a>
+
+</th>
+<th width="80"> 
+<a style="cursor:pointer" onmouseover="this.T_WIDTH=250;this.T_OFFSETX=-30;this.T_OFFSETY=-30;this.T_STICKY=true;this.T_TEMP=5000;return escape('&lt;table width=\'240\'&gt;&lt;tr&gt;&lt;td class=\'c\'&gt;Alianza SOXP en la posición 201 con 12 Miembro(s)&lt;/td&gt;&lt;/tr&gt;&lt;th&gt;&lt;table&gt;&lt;tr&gt;&lt;td&gt;&lt;a href=\'ainfo.php?session=475a011fd489&a=3858\'&gt;Ver página de alianza&lt;/a&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;a href=\'stat.php?session=475a011fd489&start=201&who=ally\'&gt;Ver en estadísticas&lt;/a&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/th&gt;&lt;/table&gt;');">
+
+   SOXP </a>
+ </th>
+<th width="125" style='white-space: nowrap;'>
+<a style="cursor:pointer" onclick="javascript:doit(6, 6, 156, 2, 1, 2);"><img src="http://ogame301.de/epicblue/img/e.gif" border="0" alt="Espiar" title="Espiar" /></a>
+<a href="writemessages.php?session=475a011fd489&messageziel=125523"><img src="http://ogame301.de/epicblue/img/m.gif" border="0" alt="Escribir mensaje" title="Escribir mensaje" /></a>
+<a href="buddy.php?session=475a011fd489&a=2&u=125523"><img src="http://ogame301.de/epicblue/img/b.gif" border="0" alt="Solicitud de compañeros" title="Solicitud de compañeros" /></a>
+</th>
+</tr>
+    <tr>
+    <th width="30">
+      <a href="#"  tabindex="5" >3</a>
+    </th>
+    <th width="30">
+     <a style="cursor:pointer" onmouseover="this.T_WIDTH=250;this.T_OFFSETX=-110;this.T_OFFSETY=-30;this.T_STICKY=true;this.T_TEMP=5000;this.T_STATIC=true;return escape('&lt;table width=\'240\'&gt;&lt;tr&gt;&lt;td class=\'c\' colspan=\'2\'&gt;Planeta Shalatuwar [6:156:3]&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;th width=\'80\'&gt;&lt;img src=\'http://ogame301.de/epicblue/planeten/small/s_trockenplanet04.jpg\' height=\'75\' width=\'75\'/&gt;&lt;/th&gt;&lt;th style=\'text-align: left\'&gt;&lt;a href=\'flotten1.php?session=475a011fd489&galaxy=6&system=156&planet=3&planettype=1&target_mission=4\'&gt;Desplegar&lt;/a&gt;&lt;br /&gt;&lt;a href=\'flotten1.php?session=475a011fd489&galaxy=6&system=156&planet=3&planettype=1&target_mission=3\'&gt;Transportar&lt;/a&gt;&lt;/th&gt;&lt;/tr&gt;&lt;/table&gt;');">
+      <img src="http://ogame301.de/epicblue/planeten/small/s_trockenplanet04.jpg" height="30" width="30"/></a>
+</th>
+<th width="130" style='white-space: nowrap;'>
+Shalatuwar</th>
+<th width="30" style='white-space: nowrap;'>
+ 
+   </th> 
+    <th width="30">
+
+ 
+   </th>
+    <th width="150"> 
+
+     <a style="cursor:pointer" onmouseover="this.T_WIDTH=200;this.T_OFFSETX=-20;this.T_OFFSETY=-30;this.T_STICKY=true;this.T_TEMP=5000;return escape('&lt;table width=\'190\'&gt;&lt;tr&gt;&lt;td class=\'c\' colspan=\'2\'&gt;Jugador Croc en el ranking 1428&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;a href=\'stat.php?session=475a011fd489&start=1401\'&gt;Ver en estadísticas&lt;/a&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;');"><span class="normal">Croc</span></a>
+
+</th>
+<th width="80"> 
+<a style="cursor:pointer" onmouseover="this.T_WIDTH=250;this.T_OFFSETX=-30;this.T_OFFSETY=-30;this.T_STICKY=true;this.T_TEMP=5000;return escape('&lt;table width=\'240\'&gt;&lt;tr&gt;&lt;td class=\'c\'&gt;Alianza DFE en la posición 30 con 27 Miembro(s)&lt;/td&gt;&lt;/tr&gt;&lt;th&gt;&lt;table&gt;&lt;tr&gt;&lt;td&gt;&lt;a href=\'allianzen.php?session=475a011fd489\'&gt;Ver página de alianza&lt;/a&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;a href=\'stat.php?session=475a011fd489&start=1&who=ally\'&gt;Ver en estadísticas&lt;/a&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;a href=\'redir.php?url=http://darkfenix.superforos.com/\' target=\'_new\'&gt;Página principal de la alianza&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/th&gt;&lt;/table&gt;');">
+
+   DFE </a>
+ </th>
+<th width="125" style='white-space: nowrap;'>
+</th>
+</tr>
+    <tr>
+    <th width="30">
+      <a href="#"  tabindex="6" >4</a>
+    </th>
+    <th width="30">
+     <a style="cursor:pointer" onmouseover="this.T_WIDTH=250;this.T_OFFSETX=-110;this.T_OFFSETY=-30;this.T_STICKY=true;this.T_TEMP=5000;this.T_STATIC=true;return escape('&lt;table width=\'240\'&gt;&lt;tr&gt;&lt;td class=\'c\' colspan=\'2\'&gt;Planeta Nemesis [6:156:4]&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;th width=\'80\'&gt;&lt;img src=\'http://ogame301.de/epicblue/planeten/small/s_dschjungelplanet01.jpg\' height=\'75\' width=\'75\'/&gt;&lt;/th&gt;&lt;th style=\'text-align: left\'&gt;&lt;a href=\'#\' onclick=\'doit(6, 6, 156, 4, 1, 2)\'&gt;Espiar&lt;/a&gt;&lt;br /&gt;&lt;br /&gt;&lt;a href=\'flotten1.php?session=475a011fd489&galaxy=6&system=156&planet=4&planettype=1&target_mission=1\'&gt;Atacar&lt;/a&gt;&lt;br /&gt;&lt;a href=\'flotten1.php?session=475a011fd489&galaxy=6&system=156&planet=4&planettype=1&target_mission=3\'&gt;Transportar&lt;/a&gt;&lt;/th&gt;&lt;/tr&gt;&lt;/table&gt;');">
+      <img src="http://ogame301.de/epicblue/planeten/small/s_dschjungelplanet01.jpg" height="30" width="30"/></a>
+</th>
+<th width="130" style='white-space: nowrap;'>
+Nemesis</th>
+<th width="30" style='white-space: nowrap;'>
+ 
+   </th> 
+    <th width="30">
+
+ 
+   </th>
+    <th width="150"> 
+
+     <a style="cursor:pointer" onmouseover="this.T_WIDTH=200;this.T_OFFSETX=-20;this.T_OFFSETY=-30;this.T_STICKY=true;this.T_TEMP=5000;return escape('&lt;table width=\'190\'&gt;&lt;tr&gt;&lt;td class=\'c\' colspan=\'2\'&gt;Jugador Fobos&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;a href=\'writemessages.php?session=475a011fd489&messageziel=123152\'&gt;Escribir mensaje&lt;/a&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;a href=\'buddy.php?session=475a011fd489&a=2&u=123152\'&gt;Solicitud de compañeros&lt;/a&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;');"><span class="noob">Fobos</span></a>
+
+    
+(<span class='noob'>d</span>)
+</th>
+<th width="80"> 
+<a style="cursor:pointer" onmouseover="this.T_WIDTH=250;this.T_OFFSETX=-30;this.T_OFFSETY=-30;this.T_STICKY=true;this.T_TEMP=5000;return escape('&lt;table width=\'240\'&gt;&lt;tr&gt;&lt;td class=\'c\'&gt;Alianza d_f en la posición 107 con 71 Miembro(s)&lt;/td&gt;&lt;/tr&gt;&lt;th&gt;&lt;table&gt;&lt;tr&gt;&lt;td&gt;&lt;a href=\'ainfo.php?session=475a011fd489&a=5082\'&gt;Ver página de alianza&lt;/a&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;a href=\'stat.php?session=475a011fd489&start=101&who=ally\'&gt;Ver en estadísticas&lt;/a&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;a href=\'redir.php?url=http://artelomas.superforos.com\' target=\'_new\'&gt;Página principal de la alianza&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/th&gt;&lt;/table&gt;');">
+
+   d_f </a>
+ </th>
+<th width="125" style='white-space: nowrap;'>
+<a style="cursor:pointer" onclick="javascript:doit(6, 6, 156, 4, 1, 2);"><img src="http://ogame301.de/epicblue/img/e.gif" border="0" alt="Espiar" title="Espiar" /></a>
+<a href="writemessages.php?session=475a011fd489&messageziel=123152"><img src="http://ogame301.de/epicblue/img/m.gif" border="0" alt="Escribir mensaje" title="Escribir mensaje" /></a>
+<a href="buddy.php?session=475a011fd489&a=2&u=123152"><img src="http://ogame301.de/epicblue/img/b.gif" border="0" alt="Solicitud de compañeros" title="Solicitud de compañeros" /></a>
+</th>
+</tr>
+    <tr>
+    <th width="30">
+      <a href="#"  tabindex="7" >5</a>
+    </th>
+    <th width="30">
+     <a style="cursor:pointer" onmouseover="this.T_WIDTH=250;this.T_OFFSETX=-110;this.T_OFFSETY=-30;this.T_STICKY=true;this.T_TEMP=5000;this.T_STATIC=true;return escape('&lt;table width=\'240\'&gt;&lt;tr&gt;&lt;td class=\'c\' colspan=\'2\'&gt;Planeta Xshathra [6:156:5]&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;th width=\'80\'&gt;&lt;img src=\'http://ogame301.de/epicblue/planeten/small/s_dschjungelplanet01.jpg\' height=\'75\' width=\'75\'/&gt;&lt;/th&gt;&lt;th style=\'text-align: left\'&gt;&lt;a href=\'flotten1.php?session=475a011fd489&galaxy=6&system=156&planet=5&planettype=1&target_mission=4\'&gt;Desplegar&lt;/a&gt;&lt;br /&gt;&lt;a href=\'flotten1.php?session=475a011fd489&galaxy=6&system=156&planet=5&planettype=1&target_mission=3\'&gt;Transportar&lt;/a&gt;&lt;/th&gt;&lt;/tr&gt;&lt;/table&gt;');">
+      <img src="http://ogame301.de/epicblue/planeten/small/s_dschjungelplanet01.jpg" height="30" width="30"/></a>
+</th>
+<th width="130" style='white-space: nowrap;'>
+Xshathra</th>
+<th width="30" style='white-space: nowrap;'>
+ 
+   </th> 
+    <th width="30">
+
+ 
+   </th>
+    <th width="150"> 
+
+     <a style="cursor:pointer" onmouseover="this.T_WIDTH=200;this.T_OFFSETX=-20;this.T_OFFSETY=-30;this.T_STICKY=true;this.T_TEMP=5000;return escape('&lt;table width=\'190\'&gt;&lt;tr&gt;&lt;td class=\'c\' colspan=\'2\'&gt;Jugador Croc en el ranking 1428&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;a href=\'stat.php?session=475a011fd489&start=1401\'&gt;Ver en estadísticas&lt;/a&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;');"><span class="normal">Croc</span></a>
+
+</th>
+<th width="80"> 
+<a style="cursor:pointer" onmouseover="this.T_WIDTH=250;this.T_OFFSETX=-30;this.T_OFFSETY=-30;this.T_STICKY=true;this.T_TEMP=5000;return escape('&lt;table width=\'240\'&gt;&lt;tr&gt;&lt;td class=\'c\'&gt;Alianza DFE en la posición 30 con 27 Miembro(s)&lt;/td&gt;&lt;/tr&gt;&lt;th&gt;&lt;table&gt;&lt;tr&gt;&lt;td&gt;&lt;a href=\'allianzen.php?session=475a011fd489\'&gt;Ver página de alianza&lt;/a&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;a href=\'stat.php?session=475a011fd489&start=1&who=ally\'&gt;Ver en estadísticas&lt;/a&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;a href=\'redir.php?url=http://darkfenix.superforos.com/\' target=\'_new\'&gt;Página principal de la alianza&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/th&gt;&lt;/table&gt;');">
+
+   DFE </a>
+ </th>
+<th width="125" style='white-space: nowrap;'>
+</th>
+</tr>
+    <tr>
+    <th width="30">
+      <a href="#"  tabindex="8" >6</a>
+    </th>
+    <th width="30">
+     <a style="cursor:pointer" onmouseover="this.T_WIDTH=250;this.T_OFFSETX=-110;this.T_OFFSETY=-30;this.T_STICKY=true;this.T_TEMP=5000;this.T_STATIC=true;return escape('&lt;table width=\'240\'&gt;&lt;tr&gt;&lt;td class=\'c\' colspan=\'2\'&gt;Planeta Leda [6:156:6]&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;th width=\'80\'&gt;&lt;img src=\'http://ogame301.de/epicblue/planeten/small/s_dschjungelplanet07.jpg\' height=\'75\' width=\'75\'/&gt;&lt;/th&gt;&lt;th style=\'text-align: left\'&gt;&lt;a href=\'#\' onclick=\'doit(6, 6, 156, 6, 1, 2)\'&gt;Espiar&lt;/a&gt;&lt;br /&gt;&lt;br /&gt;&lt;a href=\'flotten1.php?session=475a011fd489&galaxy=6&system=156&planet=6&planettype=1&target_mission=1\'&gt;Atacar&lt;/a&gt;&lt;br /&gt;&lt;a href=\'flotten1.php?session=475a011fd489&galaxy=6&system=156&planet=6&planettype=1&target_mission=3\'&gt;Transportar&lt;/a&gt;&lt;/th&gt;&lt;/tr&gt;&lt;/table&gt;');">
+      <img src="http://ogame301.de/epicblue/planeten/small/s_dschjungelplanet07.jpg" height="30" width="30"/></a>
+</th>
+<th width="130" style='white-space: nowrap;'>
+Leda</th>
+<th width="30" style='white-space: nowrap;'>
+ 
+   </th> 
+    <th width="30">
+
+ 
+   </th>
+    <th width="150"> 
+
+     <a style="cursor:pointer" onmouseover="this.T_WIDTH=200;this.T_OFFSETX=-20;this.T_OFFSETY=-30;this.T_STICKY=true;this.T_TEMP=5000;return escape('&lt;table width=\'190\'&gt;&lt;tr&gt;&lt;td class=\'c\' colspan=\'2\'&gt;Jugador Susan Calvin en el ranking 369&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;a href=\'writemessages.php?session=475a011fd489&messageziel=111868\'&gt;Escribir mensaje&lt;/a&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;a href=\'buddy.php?session=475a011fd489&a=2&u=111868\'&gt;Solicitud de compañeros&lt;/a&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;a href=\'stat.php?session=475a011fd489&start=301\'&gt;Ver en estadísticas&lt;/a&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;');"><span class="vacation">Susan Calvin</span></a>
+
+    
+(<span class='inactive'>i</span> <span class='vacation'>v</span>)
+</th>
+<th width="80"> 
+</th>
+<th width="125" style='white-space: nowrap;'>
+<a style="cursor:pointer" onclick="javascript:doit(6, 6, 156, 6, 1, 2);"><img src="http://ogame301.de/epicblue/img/e.gif" border="0" alt="Espiar" title="Espiar" /></a>
+<a href="writemessages.php?session=475a011fd489&messageziel=111868"><img src="http://ogame301.de/epicblue/img/m.gif" border="0" alt="Escribir mensaje" title="Escribir mensaje" /></a>
+<a href="buddy.php?session=475a011fd489&a=2&u=111868"><img src="http://ogame301.de/epicblue/img/b.gif" border="0" alt="Solicitud de compañeros" title="Solicitud de compañeros" /></a>
+</th>
+</tr>
+    <tr>
+    <th width="30">
+      <a href="#"  tabindex="9" >7</a>
+<a href="#" title="Escombros: M: 16.200, C: 12.600"></a>    </th>
+    <th width="30">
+     <a style="cursor:pointer" onmouseover="this.T_WIDTH=250;this.T_OFFSETX=-110;this.T_OFFSETY=-30;this.T_STICKY=true;this.T_TEMP=5000;this.T_STATIC=true;return escape('&lt;table width=\'240\'&gt;&lt;tr&gt;&lt;td class=\'c\' colspan=\'2\'&gt;Planeta juldav [6:156:7]&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;th width=\'80\'&gt;&lt;img src=\'http://ogame301.de/epicblue/planeten/small/s_normaltempplanet02.jpg\' height=\'75\' width=\'75\'/&gt;&lt;/th&gt;&lt;th style=\'text-align: left\'&gt;&lt;a href=\'#\' onclick=\'doit(6, 6, 156, 7, 1, 2)\'&gt;Espiar&lt;/a&gt;&lt;br /&gt;&lt;br /&gt;&lt;a href=\'flotten1.php?session=475a011fd489&galaxy=6&system=156&planet=7&planettype=1&target_mission=1\'&gt;Atacar&lt;/a&gt;&lt;br /&gt;&lt;a href=\'flotten1.php?session=475a011fd489&galaxy=6&system=156&planet=7&planettype=1&target_mission=3\'&gt;Transportar&lt;/a&gt;&lt;/th&gt;&lt;/tr&gt;&lt;/table&gt;');">
+      <img src="http://ogame301.de/epicblue/planeten/small/s_normaltempplanet02.jpg" height="30" width="30"/></a>
+</th>
+<th width="130" style='white-space: nowrap;'>
+juldav</th>
+<th width="30" style='white-space: nowrap;'>
+ 
+   </th> 
+    <th width="30">
+
+    <a style="cursor:pointer" 
+       onmouseover="this.T_WIDTH=250;this.T_OFFSETX=-110;this.T_OFFSETY=-110;this.T_STICKY=true;this.T_TEMP=5000;return escape('&lt;table width=\'240\'&gt;&lt;tr&gt;&lt;td class=\'c\' colspan=\'2\'&gt;Escombros [6:156:7]&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;th width=\'80\'&gt;&lt;img src=\'http://ogame301.de/epicblue/planeten/debris.jpg\' height=\'75\' width=\'75\' alt=\'T\'/&gt;&lt;/th&gt;&lt;th&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=\'c\' colspan=\'2\'&gt;Recursos:&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;th&gt;Metal:&lt;/th&gt;&lt;th&gt;16.200&lt;/th&gt;&lt;/tr&gt;&lt;tr&gt;&lt;th&gt;Cristal:&lt;/th&gt;&lt;th&gt;12.600&lt;/th&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td class=\'c\' colspan=\'2\'&gt;Acciones:&lt;/tr&gt;&lt;tr&gt;&lt;th colspan=\'2\' style=\'text-align: left\'&gt;&lt;font color=\'#808080\'&gt;Recolectar&lt;/font&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/th&gt;&lt;/tr&gt;&lt;/table&gt;');" 
+>
+<img src="http://ogame301.de/epicblue/planeten/debris.jpg" height="22" width="22" alt="Escombros" /></a>
+
+   </th>
+    <th width="150"> 
+
+     <a style="cursor:pointer" onmouseover="this.T_WIDTH=200;this.T_OFFSETX=-20;this.T_OFFSETY=-30;this.T_STICKY=true;this.T_TEMP=5000;return escape('&lt;table width=\'190\'&gt;&lt;tr&gt;&lt;td class=\'c\' colspan=\'2\'&gt;Jugador puro&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;a href=\'writemessages.php?session=475a011fd489&messageziel=123153\'&gt;Escribir mensaje&lt;/a&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;a href=\'buddy.php?session=475a011fd489&a=2&u=123153\'&gt;Solicitud de compañeros&lt;/a&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;');"><span class="noob">puro</span></a>
+
+    
+(<span class='noob'>d</span>)
+</th>
+<th width="80"> 
+<a style="cursor:pointer" onmouseover="this.T_WIDTH=250;this.T_OFFSETX=-30;this.T_OFFSETY=-30;this.T_STICKY=true;this.T_TEMP=5000;return escape('&lt;table width=\'240\'&gt;&lt;tr&gt;&lt;td class=\'c\'&gt;Alianza I.R.U18 en la posición 227 con 20 Miembro(s)&lt;/td&gt;&lt;/tr&gt;&lt;th&gt;&lt;table&gt;&lt;tr&gt;&lt;td&gt;&lt;a href=\'ainfo.php?session=475a011fd489&a=4859\'&gt;Ver página de alianza&lt;/a&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;a href=\'stat.php?session=475a011fd489&start=201&who=ally\'&gt;Ver en estadísticas&lt;/a&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;a href=\'redir.php?url=http://iru18.superforos.com\' target=\'_new\'&gt;Página principal de la alianza&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/th&gt;&lt;/table&gt;');">
+
+   I.R.U18 </a>
+ </th>
+<th width="125" style='white-space: nowrap;'>
+<a style="cursor:pointer" onclick="javascript:doit(6, 6, 156, 7, 1, 2);"><img src="http://ogame301.de/epicblue/img/e.gif" border="0" alt="Espiar" title="Espiar" /></a>
+<a href="writemessages.php?session=475a011fd489&messageziel=123153"><img src="http://ogame301.de/epicblue/img/m.gif" border="0" alt="Escribir mensaje" title="Escribir mensaje" /></a>
+<a href="buddy.php?session=475a011fd489&a=2&u=123153"><img src="http://ogame301.de/epicblue/img/b.gif" border="0" alt="Solicitud de compañeros" title="Solicitud de compañeros" /></a>
+</th>
+</tr>
+    <tr>
+    <th width="30">
+      <a href="#"  tabindex="10" >8</a>
+    </th>
+    <th width="30">
+     <a style="cursor:pointer" onmouseover="this.T_WIDTH=250;this.T_OFFSETX=-110;this.T_OFFSETY=-30;this.T_STICKY=true;this.T_TEMP=5000;this.T_STATIC=true;return escape('&lt;table width=\'240\'&gt;&lt;tr&gt;&lt;td class=\'c\' colspan=\'2\'&gt;Planeta Alexandria [6:156:8]&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;th width=\'80\'&gt;&lt;img src=\'http://ogame301.de/epicblue/planeten/small/s_normaltempplanet03.jpg\' height=\'75\' width=\'75\'/&gt;&lt;/th&gt;&lt;th style=\'text-align: left\'&gt;&lt;a href=\'#\' onclick=\'doit(6, 6, 156, 8, 1, 2)\'&gt;Espiar&lt;/a&gt;&lt;br /&gt;&lt;br /&gt;&lt;a href=\'flotten1.php?session=475a011fd489&galaxy=6&system=156&planet=8&planettype=1&target_mission=1\'&gt;Atacar&lt;/a&gt;&lt;br /&gt;&lt;a href=\'flotten1.php?session=475a011fd489&galaxy=6&system=156&planet=8&planettype=1&target_mission=3\'&gt;Transportar&lt;/a&gt;&lt;/th&gt;&lt;/tr&gt;&lt;/table&gt;');">
+      <img src="http://ogame301.de/epicblue/planeten/small/s_normaltempplanet03.jpg" height="30" width="30"/></a>
+</th>
+<th width="130" style='white-space: nowrap;'>
+Alexandria</th>
+<th width="30" style='white-space: nowrap;'>
+ 
+   </th> 
+    <th width="30">
+
+ 
+   </th>
+    <th width="150"> 
+
+     <a style="cursor:pointer" onmouseover="this.T_WIDTH=200;this.T_OFFSETX=-20;this.T_OFFSETY=-30;this.T_STICKY=true;this.T_TEMP=5000;return escape('&lt;table width=\'190\'&gt;&lt;tr&gt;&lt;td class=\'c\' colspan=\'2\'&gt;Jugador bleda&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;a href=\'writemessages.php?session=475a011fd489&messageziel=123160\'&gt;Escribir mensaje&lt;/a&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;a href=\'buddy.php?session=475a011fd489&a=2&u=123160\'&gt;Solicitud de compañeros&lt;/a&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;');"><span class="normal">bleda</span></a>
+
+</th>
+<th width="80"> 
+<a style="cursor:pointer" onmouseover="this.T_WIDTH=250;this.T_OFFSETX=-30;this.T_OFFSETY=-30;this.T_STICKY=true;this.T_TEMP=5000;return escape('&lt;table width=\'240\'&gt;&lt;tr&gt;&lt;td class=\'c\'&gt;Alianza DFE en la posición 30 con 27 Miembro(s)&lt;/td&gt;&lt;/tr&gt;&lt;th&gt;&lt;table&gt;&lt;tr&gt;&lt;td&gt;&lt;a href=\'allianzen.php?session=475a011fd489\'&gt;Ver página de alianza&lt;/a&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;a href=\'stat.php?session=475a011fd489&start=1&who=ally\'&gt;Ver en estadísticas&lt;/a&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;a href=\'redir.php?url=http://darkfenix.superforos.com/\' target=\'_new\'&gt;Página principal de la alianza&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/th&gt;&lt;/table&gt;');">
+
+   <span class="allymember">DFE</span>
+ </a>
+ </th>
+<th width="125" style='white-space: nowrap;'>
+<a style="cursor:pointer" onclick="javascript:doit(6, 6, 156, 8, 1, 2);"><img src="http://ogame301.de/epicblue/img/e.gif" border="0" alt="Espiar" title="Espiar" /></a>
+<a href="writemessages.php?session=475a011fd489&messageziel=123160"><img src="http://ogame301.de/epicblue/img/m.gif" border="0" alt="Escribir mensaje" title="Escribir mensaje" /></a>
+<a href="buddy.php?session=475a011fd489&a=2&u=123160"><img src="http://ogame301.de/epicblue/img/b.gif" border="0" alt="Solicitud de compañeros" title="Solicitud de compañeros" /></a>
+</th>
+</tr>
+    <tr>
+    <th width="30">
+      <a href="#"  tabindex="11" >9</a>
+    </th>
+    <th width="30">
+     <a style="cursor:pointer" onmouseover="this.T_WIDTH=250;this.T_OFFSETX=-110;this.T_OFFSETY=-30;this.T_STICKY=true;this.T_TEMP=5000;this.T_STATIC=true;return escape('&lt;table width=\'240\'&gt;&lt;tr&gt;&lt;td class=\'c\' colspan=\'2\'&gt;Planeta Estigmata [6:156:9]&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;th width=\'80\'&gt;&lt;img src=\'http://ogame301.de/epicblue/planeten/small/s_normaltempplanet04.jpg\' height=\'75\' width=\'75\'/&gt;&lt;/th&gt;&lt;th style=\'text-align: left\'&gt;&lt;a href=\'#\' onclick=\'doit(6, 6, 156, 9, 1, 2)\'&gt;Espiar&lt;/a&gt;&lt;br /&gt;&lt;br /&gt;&lt;a href=\'flotten1.php?session=475a011fd489&galaxy=6&system=156&planet=9&planettype=1&target_mission=1\'&gt;Atacar&lt;/a&gt;&lt;br /&gt;&lt;a href=\'flotten1.php?session=475a011fd489&galaxy=6&system=156&planet=9&planettype=1&target_mission=3\'&gt;Transportar&lt;/a&gt;&lt;/th&gt;&lt;/tr&gt;&lt;/table&gt;');">
+      <img src="http://ogame301.de/epicblue/planeten/small/s_normaltempplanet04.jpg" height="30" width="30"/></a>
+</th>
+<th width="130" style='white-space: nowrap;'>
+Estigmata</th>
+<th width="30" style='white-space: nowrap;'>
+ 
+   </th> 
+    <th width="30">
+
+ 
+   </th>
+    <th width="150"> 
+
+     <a style="cursor:pointer" onmouseover="this.T_WIDTH=200;this.T_OFFSETX=-20;this.T_OFFSETY=-30;this.T_STICKY=true;this.T_TEMP=5000;return escape('&lt;table width=\'190\'&gt;&lt;tr&gt;&lt;td class=\'c\' colspan=\'2\'&gt;Jugador winccl&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;a href=\'writemessages.php?session=475a011fd489&messageziel=125523\'&gt;Escribir mensaje&lt;/a&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;a href=\'buddy.php?session=475a011fd489&a=2&u=125523\'&gt;Solicitud de compañeros&lt;/a&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;');"><span class="normal">winccl</span></a>
+
+</th>
+<th width="80"> 
+<a style="cursor:pointer" onmouseover="this.T_WIDTH=250;this.T_OFFSETX=-30;this.T_OFFSETY=-30;this.T_STICKY=true;this.T_TEMP=5000;return escape('&lt;table width=\'240\'&gt;&lt;tr&gt;&lt;td class=\'c\'&gt;Alianza SOXP en la posición 201 con 12 Miembro(s)&lt;/td&gt;&lt;/tr&gt;&lt;th&gt;&lt;table&gt;&lt;tr&gt;&lt;td&gt;&lt;a href=\'ainfo.php?session=475a011fd489&a=3858\'&gt;Ver página de alianza&lt;/a&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;a href=\'stat.php?session=475a011fd489&start=201&who=ally\'&gt;Ver en estadísticas&lt;/a&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/th&gt;&lt;/table&gt;');">
+
+   SOXP </a>
+ </th>
+<th width="125" style='white-space: nowrap;'>
+<a style="cursor:pointer" onclick="javascript:doit(6, 6, 156, 9, 1, 2);"><img src="http://ogame301.de/epicblue/img/e.gif" border="0" alt="Espiar" title="Espiar" /></a>
+<a href="writemessages.php?session=475a011fd489&messageziel=125523"><img src="http://ogame301.de/epicblue/img/m.gif" border="0" alt="Escribir mensaje" title="Escribir mensaje" /></a>
+<a href="buddy.php?session=475a011fd489&a=2&u=125523"><img src="http://ogame301.de/epicblue/img/b.gif" border="0" alt="Solicitud de compañeros" title="Solicitud de compañeros" /></a>
+</th>
+</tr>
+    <tr>
+    <th width="30">
+      <a href="#"  tabindex="12" >10</a>
+    </th>
+    <th width="30">
+     <a style="cursor:pointer" onmouseover="this.T_WIDTH=250;this.T_OFFSETX=-110;this.T_OFFSETY=-30;this.T_STICKY=true;this.T_TEMP=5000;this.T_STATIC=true;return escape('&lt;table width=\'240\'&gt;&lt;tr&gt;&lt;td class=\'c\' colspan=\'2\'&gt;Planeta Ragnar [6:156:10]&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;th width=\'80\'&gt;&lt;img src=\'http://ogame301.de/epicblue/planeten/small/s_wasserplanet07.jpg\' height=\'75\' width=\'75\'/&gt;&lt;/th&gt;&lt;th style=\'text-align: left\'&gt;&lt;a href=\'#\' onclick=\'doit(6, 6, 156, 10, 1, 2)\'&gt;Espiar&lt;/a&gt;&lt;br /&gt;&lt;br /&gt;&lt;a href=\'flotten1.php?session=475a011fd489&galaxy=6&system=156&planet=10&planettype=1&target_mission=1\'&gt;Atacar&lt;/a&gt;&lt;br /&gt;&lt;a href=\'flotten1.php?session=475a011fd489&galaxy=6&system=156&planet=10&planettype=1&target_mission=3\'&gt;Transportar&lt;/a&gt;&lt;/th&gt;&lt;/tr&gt;&lt;/table&gt;');">
+      <img src="http://ogame301.de/epicblue/planeten/small/s_wasserplanet07.jpg" height="30" width="30"/></a>
+</th>
+<th width="130" style='white-space: nowrap;'>
+Ragnar&nbsp;(*)</th>
+<th width="30" style='white-space: nowrap;'>
+ 
+   </th> 
+    <th width="30">
+
+ 
+   </th>
+    <th width="150"> 
+
+     <a style="cursor:pointer" onmouseover="this.T_WIDTH=200;this.T_OFFSETX=-20;this.T_OFFSETY=-30;this.T_STICKY=true;this.T_TEMP=5000;return escape('&lt;table width=\'190\'&gt;&lt;tr&gt;&lt;td class=\'c\' colspan=\'2\'&gt;Jugador RUSS en el ranking 253&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;a href=\'writemessages.php?session=475a011fd489&messageziel=113916\'&gt;Escribir mensaje&lt;/a&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;a href=\'buddy.php?session=475a011fd489&a=2&u=113916\'&gt;Solicitud de compañeros&lt;/a&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;a href=\'stat.php?session=475a011fd489&start=201\'&gt;Ver en estadísticas&lt;/a&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;');"><span class="normal">RUSS</span></a>
+
+</th>
+<th width="80"> 
+<a style="cursor:pointer" onmouseover="this.T_WIDTH=250;this.T_OFFSETX=-30;this.T_OFFSETY=-30;this.T_STICKY=true;this.T_TEMP=5000;return escape('&lt;table width=\'240\'&gt;&lt;tr&gt;&lt;td class=\'c\'&gt;Alianza VTES2 en la posición 7 con 55 Miembro(s)&lt;/td&gt;&lt;/tr&gt;&lt;th&gt;&lt;table&gt;&lt;tr&gt;&lt;td&gt;&lt;a href=\'ainfo.php?session=475a011fd489&a=42\'&gt;Ver página de alianza&lt;/a&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;a href=\'stat.php?session=475a011fd489&start=1&who=ally\'&gt;Ver en estadísticas&lt;/a&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;a href=\'redir.php?url=http://spamordie.forum.ijijiji.com/\' target=\'_new\'&gt;Página principal de la alianza&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/th&gt;&lt;/table&gt;');">
+
+   VTES2 </a>
+ </th>
+<th width="125" style='white-space: nowrap;'>
+<a style="cursor:pointer" onclick="javascript:doit(6, 6, 156, 10, 1, 2);"><img src="http://ogame301.de/epicblue/img/e.gif" border="0" alt="Espiar" title="Espiar" /></a>
+<a href="writemessages.php?session=475a011fd489&messageziel=113916"><img src="http://ogame301.de/epicblue/img/m.gif" border="0" alt="Escribir mensaje" title="Escribir mensaje" /></a>
+<a href="buddy.php?session=475a011fd489&a=2&u=113916"><img src="http://ogame301.de/epicblue/img/b.gif" border="0" alt="Solicitud de compañeros" title="Solicitud de compañeros" /></a>
+</th>
+</tr>
+    <tr>
+    <th width="30">
+      <a href="#"  tabindex="13" >11</a>
+    </th>
+    <th width="30">
+     <a style="cursor:pointer" onmouseover="this.T_WIDTH=250;this.T_OFFSETX=-110;this.T_OFFSETY=-30;this.T_STICKY=true;this.T_TEMP=5000;this.T_STATIC=true;return escape('&lt;table width=\'240\'&gt;&lt;tr&gt;&lt;td class=\'c\' colspan=\'2\'&gt;Planeta super man [6:156:11]&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;th width=\'80\'&gt;&lt;img src=\'http://ogame301.de/epicblue/planeten/small/s_wasserplanet07.jpg\' height=\'75\' width=\'75\'/&gt;&lt;/th&gt;&lt;th style=\'text-align: left\'&gt;&lt;a href=\'#\' onclick=\'doit(6, 6, 156, 11, 1, 2)\'&gt;Espiar&lt;/a&gt;&lt;br /&gt;&lt;br /&gt;&lt;a href=\'flotten1.php?session=475a011fd489&galaxy=6&system=156&planet=11&planettype=1&target_mission=1\'&gt;Atacar&lt;/a&gt;&lt;br /&gt;&lt;a href=\'flotten1.php?session=475a011fd489&galaxy=6&system=156&planet=11&planettype=1&target_mission=3\'&gt;Transportar&lt;/a&gt;&lt;/th&gt;&lt;/tr&gt;&lt;/table&gt;');">
+      <img src="http://ogame301.de/epicblue/planeten/small/s_wasserplanet07.jpg" height="30" width="30"/></a>
+</th>
+<th width="130" style='white-space: nowrap;'>
+super man</th>
+<th width="30" style='white-space: nowrap;'>
+ 
+   </th> 
+    <th width="30">
+
+ 
+   </th>
+    <th width="150"> 
+
+     <a style="cursor:pointer" onmouseover="this.T_WIDTH=200;this.T_OFFSETX=-20;this.T_OFFSETY=-30;this.T_STICKY=true;this.T_TEMP=5000;return escape('&lt;table width=\'190\'&gt;&lt;tr&gt;&lt;td class=\'c\' colspan=\'2\'&gt;Jugador stefan en el ranking 0&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;a href=\'writemessages.php?session=475a011fd489&messageziel=136310\'&gt;Escribir mensaje&lt;/a&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;a href=\'buddy.php?session=475a011fd489&a=2&u=136310\'&gt;Solicitud de compañeros&lt;/a&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;a href=\'stat.php?session=475a011fd489&start=1\'&gt;Ver en estadísticas&lt;/a&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;');"><span class="noob">stefan</span></a>
+
+    
+(<span class='noob'>d</span>)
+</th>
+<th width="80"> 
+</th>
+<th width="125" style='white-space: nowrap;'>
+<a style="cursor:pointer" onclick="javascript:doit(6, 6, 156, 11, 1, 2);"><img src="http://ogame301.de/epicblue/img/e.gif" border="0" alt="Espiar" title="Espiar" /></a>
+<a href="writemessages.php?session=475a011fd489&messageziel=136310"><img src="http://ogame301.de/epicblue/img/m.gif" border="0" alt="Escribir mensaje" title="Escribir mensaje" /></a>
+<a href="buddy.php?session=475a011fd489&a=2&u=136310"><img src="http://ogame301.de/epicblue/img/b.gif" border="0" alt="Solicitud de compañeros" title="Solicitud de compañeros" /></a>
+</th>
+</tr>
+    <tr>
+    <th width="30">
+      <a href="#"  tabindex="14" >12</a>
+    </th>
+    <th width="30">
+     <a style="cursor:pointer" onmouseover="this.T_WIDTH=250;this.T_OFFSETX=-110;this.T_OFFSETY=-30;this.T_STICKY=true;this.T_TEMP=5000;this.T_STATIC=true;return escape('&lt;table width=\'240\'&gt;&lt;tr&gt;&lt;td class=\'c\' colspan=\'2\'&gt;Planeta tierra [6:156:12]&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;th width=\'80\'&gt;&lt;img src=\'http://ogame301.de/epicblue/planeten/small/s_wasserplanet05.jpg\' height=\'75\' width=\'75\'/&gt;&lt;/th&gt;&lt;th style=\'text-align: left\'&gt;&lt;a href=\'#\' onclick=\'doit(6, 6, 156, 12, 1, 2)\'&gt;Espiar&lt;/a&gt;&lt;br /&gt;&lt;br /&gt;&lt;a href=\'flotten1.php?session=475a011fd489&galaxy=6&system=156&planet=12&planettype=1&target_mission=1\'&gt;Atacar&lt;/a&gt;&lt;br /&gt;&lt;a href=\'flotten1.php?session=475a011fd489&galaxy=6&system=156&planet=12&planettype=1&target_mission=3\'&gt;Transportar&lt;/a&gt;&lt;/th&gt;&lt;/tr&gt;&lt;/table&gt;');">
+      <img src="http://ogame301.de/epicblue/planeten/small/s_wasserplanet05.jpg" height="30" width="30"/></a>
+</th>
+<th width="130" style='white-space: nowrap;'>
+tierra</th>
+<th width="30" style='white-space: nowrap;'>
+ 
+   </th> 
+    <th width="30">
+
+ 
+   </th>
+    <th width="150"> 
+
+     <a style="cursor:pointer" onmouseover="this.T_WIDTH=200;this.T_OFFSETX=-20;this.T_OFFSETY=-30;this.T_STICKY=true;this.T_TEMP=5000;return escape('&lt;table width=\'190\'&gt;&lt;tr&gt;&lt;td class=\'c\' colspan=\'2\'&gt;Jugador cristianub2&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;a href=\'writemessages.php?session=475a011fd489&messageziel=136311\'&gt;Escribir mensaje&lt;/a&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;a href=\'buddy.php?session=475a011fd489&a=2&u=136311\'&gt;Solicitud de compañeros&lt;/a&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;');"><span class="noob">cristianub2</span></a>
+
+    
+(<span class='noob'>d</span>)
+</th>
+<th width="80"> 
+</th>
+<th width="125" style='white-space: nowrap;'>
+<a style="cursor:pointer" onclick="javascript:doit(6, 6, 156, 12, 1, 2);"><img src="http://ogame301.de/epicblue/img/e.gif" border="0" alt="Espiar" title="Espiar" /></a>
+<a href="writemessages.php?session=475a011fd489&messageziel=136311"><img src="http://ogame301.de/epicblue/img/m.gif" border="0" alt="Escribir mensaje" title="Escribir mensaje" /></a>
+<a href="buddy.php?session=475a011fd489&a=2&u=136311"><img src="http://ogame301.de/epicblue/img/b.gif" border="0" alt="Solicitud de compañeros" title="Solicitud de compañeros" /></a>
+</th>
+</tr>
+    <tr>
+    <th width="30">
+      <a href="#"  tabindex="15" >13</a>
+    </th>
+    <th width="30">
+     <a style="cursor:pointer" onmouseover="this.T_WIDTH=250;this.T_OFFSETX=-110;this.T_OFFSETY=-30;this.T_STICKY=true;this.T_TEMP=5000;this.T_STATIC=true;return escape('&lt;table width=\'240\'&gt;&lt;tr&gt;&lt;td class=\'c\' colspan=\'2\'&gt;Planeta ragnarok [6:156:13]&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;th width=\'80\'&gt;&lt;img src=\'http://ogame301.de/epicblue/planeten/small/s_eisplanet05.jpg\' height=\'75\' width=\'75\'/&gt;&lt;/th&gt;&lt;th style=\'text-align: left\'&gt;&lt;a href=\'#\' onclick=\'doit(6, 6, 156, 13, 1, 2)\'&gt;Espiar&lt;/a&gt;&lt;br /&gt;&lt;br /&gt;&lt;a href=\'flotten1.php?session=475a011fd489&galaxy=6&system=156&planet=13&planettype=1&target_mission=1\'&gt;Atacar&lt;/a&gt;&lt;br /&gt;&lt;a href=\'flotten1.php?session=475a011fd489&galaxy=6&system=156&planet=13&planettype=1&target_mission=3\'&gt;Transportar&lt;/a&gt;&lt;/th&gt;&lt;/tr&gt;&lt;/table&gt;');">
+      <img src="http://ogame301.de/epicblue/planeten/small/s_eisplanet05.jpg" height="30" width="30"/></a>
+</th>
+<th width="130" style='white-space: nowrap;'>
+ragnarok</th>
+<th width="30" style='white-space: nowrap;'>
+ 
+   </th> 
+    <th width="30">
+
+ 
+   </th>
+    <th width="150"> 
+
+     <a style="cursor:pointer" onmouseover="this.T_WIDTH=200;this.T_OFFSETX=-20;this.T_OFFSETY=-30;this.T_STICKY=true;this.T_TEMP=5000;return escape('&lt;table width=\'190\'&gt;&lt;tr&gt;&lt;td class=\'c\' colspan=\'2\'&gt;Jugador Fobos&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;a href=\'writemessages.php?session=475a011fd489&messageziel=123152\'&gt;Escribir mensaje&lt;/a&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;a href=\'buddy.php?session=475a011fd489&a=2&u=123152\'&gt;Solicitud de compañeros&lt;/a&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;');"><span class="noob">Fobos</span></a>
+
+    
+(<span class='noob'>d</span>)
+</th>
+<th width="80"> 
+<a style="cursor:pointer" onmouseover="this.T_WIDTH=250;this.T_OFFSETX=-30;this.T_OFFSETY=-30;this.T_STICKY=true;this.T_TEMP=5000;return escape('&lt;table width=\'240\'&gt;&lt;tr&gt;&lt;td class=\'c\'&gt;Alianza d_f en la posición 107 con 71 Miembro(s)&lt;/td&gt;&lt;/tr&gt;&lt;th&gt;&lt;table&gt;&lt;tr&gt;&lt;td&gt;&lt;a href=\'ainfo.php?session=475a011fd489&a=5082\'&gt;Ver página de alianza&lt;/a&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;a href=\'stat.php?session=475a011fd489&start=101&who=ally\'&gt;Ver en estadísticas&lt;/a&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;a href=\'redir.php?url=http://artelomas.superforos.com\' target=\'_new\'&gt;Página principal de la alianza&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/th&gt;&lt;/table&gt;');">
+
+   d_f </a>
+ </th>
+<th width="125" style='white-space: nowrap;'>
+<a style="cursor:pointer" onclick="javascript:doit(6, 6, 156, 13, 1, 2);"><img src="http://ogame301.de/epicblue/img/e.gif" border="0" alt="Espiar" title="Espiar" /></a>
+<a href="writemessages.php?session=475a011fd489&messageziel=123152"><img src="http://ogame301.de/epicblue/img/m.gif" border="0" alt="Escribir mensaje" title="Escribir mensaje" /></a>
+<a href="buddy.php?session=475a011fd489&a=2&u=123152"><img src="http://ogame301.de/epicblue/img/b.gif" border="0" alt="Solicitud de compañeros" title="Solicitud de compañeros" /></a>
+</th>
+</tr>
+    <tr>
+    <th width="30">
+      <a href="#"  tabindex="16" >14</a>
+    </th>
+    <th width="30">
+     <a style="cursor:pointer" onmouseover="this.T_WIDTH=250;this.T_OFFSETX=-110;this.T_OFFSETY=-30;this.T_STICKY=true;this.T_TEMP=5000;this.T_STATIC=true;return escape('&lt;table width=\'240\'&gt;&lt;tr&gt;&lt;td class=\'c\' colspan=\'2\'&gt;Planeta Argos [6:156:14]&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;th width=\'80\'&gt;&lt;img src=\'http://ogame301.de/epicblue/planeten/small/s_eisplanet06.jpg\' height=\'75\' width=\'75\'/&gt;&lt;/th&gt;&lt;th style=\'text-align: left\'&gt;&lt;a href=\'#\' onclick=\'doit(6, 6, 156, 14, 1, 2)\'&gt;Espiar&lt;/a&gt;&lt;br /&gt;&lt;br /&gt;&lt;a href=\'flotten1.php?session=475a011fd489&galaxy=6&system=156&planet=14&planettype=1&target_mission=1\'&gt;Atacar&lt;/a&gt;&lt;br /&gt;&lt;a href=\'flotten1.php?session=475a011fd489&galaxy=6&system=156&planet=14&planettype=1&target_mission=3\'&gt;Transportar&lt;/a&gt;&lt;/th&gt;&lt;/tr&gt;&lt;/table&gt;');">
+      <img src="http://ogame301.de/epicblue/planeten/small/s_eisplanet06.jpg" height="30" width="30"/></a>
+</th>
+<th width="130" style='white-space: nowrap;'>
+Argos</th>
+<th width="30" style='white-space: nowrap;'>
+ 
+   </th> 
+    <th width="30">
+
+ 
+   </th>
+    <th width="150"> 
+
+     <a style="cursor:pointer" onmouseover="this.T_WIDTH=200;this.T_OFFSETX=-20;this.T_OFFSETY=-30;this.T_STICKY=true;this.T_TEMP=5000;return escape('&lt;table width=\'190\'&gt;&lt;tr&gt;&lt;td class=\'c\' colspan=\'2\'&gt;Jugador Fobos&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;a href=\'writemessages.php?session=475a011fd489&messageziel=123152\'&gt;Escribir mensaje&lt;/a&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;a href=\'buddy.php?session=475a011fd489&a=2&u=123152\'&gt;Solicitud de compañeros&lt;/a&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;');"><span class="noob">Fobos</span></a>
+
+    
+(<span class='noob'>d</span>)
+</th>
+<th width="80"> 
+<a style="cursor:pointer" onmouseover="this.T_WIDTH=250;this.T_OFFSETX=-30;this.T_OFFSETY=-30;this.T_STICKY=true;this.T_TEMP=5000;return escape('&lt;table width=\'240\'&gt;&lt;tr&gt;&lt;td class=\'c\'&gt;Alianza d_f en la posición 107 con 71 Miembro(s)&lt;/td&gt;&lt;/tr&gt;&lt;th&gt;&lt;table&gt;&lt;tr&gt;&lt;td&gt;&lt;a href=\'ainfo.php?session=475a011fd489&a=5082\'&gt;Ver página de alianza&lt;/a&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;a href=\'stat.php?session=475a011fd489&start=101&who=ally\'&gt;Ver en estadísticas&lt;/a&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;a href=\'redir.php?url=http://artelomas.superforos.com\' target=\'_new\'&gt;Página principal de la alianza&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/th&gt;&lt;/table&gt;');">
+
+   d_f </a>
+ </th>
+<th width="125" style='white-space: nowrap;'>
+<a style="cursor:pointer" onclick="javascript:doit(6, 6, 156, 14, 1, 2);"><img src="http://ogame301.de/epicblue/img/e.gif" border="0" alt="Espiar" title="Espiar" /></a>
+<a href="writemessages.php?session=475a011fd489&messageziel=123152"><img src="http://ogame301.de/epicblue/img/m.gif" border="0" alt="Escribir mensaje" title="Escribir mensaje" /></a>
+<a href="buddy.php?session=475a011fd489&a=2&u=123152"><img src="http://ogame301.de/epicblue/img/b.gif" border="0" alt="Solicitud de compañeros" title="Solicitud de compañeros" /></a>
+</th>
+</tr>
+    <tr>
+    <th width="30">
+      <a href="#"  tabindex="17" >15</a>
+    </th>
+    <th width="30">
+     <a style="cursor:pointer" onmouseover="this.T_WIDTH=250;this.T_OFFSETX=-110;this.T_OFFSETY=-30;this.T_STICKY=true;this.T_TEMP=5000;this.T_STATIC=true;return escape('&lt;table width=\'240\'&gt;&lt;tr&gt;&lt;td class=\'c\' colspan=\'2\'&gt;Planeta Ixion [6:156:15]&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;th width=\'80\'&gt;&lt;img src=\'http://ogame301.de/epicblue/planeten/small/s_eisplanet05.jpg\' height=\'75\' width=\'75\'/&gt;&lt;/th&gt;&lt;th style=\'text-align: left\'&gt;&lt;a href=\'#\' onclick=\'doit(6, 6, 156, 15, 1, 2)\'&gt;Espiar&lt;/a&gt;&lt;br /&gt;&lt;br /&gt;&lt;a href=\'flotten1.php?session=475a011fd489&galaxy=6&system=156&planet=15&planettype=1&target_mission=1\'&gt;Atacar&lt;/a&gt;&lt;br /&gt;&lt;a href=\'flotten1.php?session=475a011fd489&galaxy=6&system=156&planet=15&planettype=1&target_mission=3\'&gt;Transportar&lt;/a&gt;&lt;/th&gt;&lt;/tr&gt;&lt;/table&gt;');">
+      <img src="http://ogame301.de/epicblue/planeten/small/s_eisplanet05.jpg" height="30" width="30"/></a>
+</th>
+<th width="130" style='white-space: nowrap;'>
+Ixion</th>
+<th width="30" style='white-space: nowrap;'>
+ 
+   </th> 
+    <th width="30">
+
+ 
+   </th>
+    <th width="150"> 
+
+     <a style="cursor:pointer" onmouseover="this.T_WIDTH=200;this.T_OFFSETX=-20;this.T_OFFSETY=-30;this.T_STICKY=true;this.T_TEMP=5000;return escape('&lt;table width=\'190\'&gt;&lt;tr&gt;&lt;td class=\'c\' colspan=\'2\'&gt;Jugador Fobos&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;a href=\'writemessages.php?session=475a011fd489&messageziel=123152\'&gt;Escribir mensaje&lt;/a&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;a href=\'buddy.php?session=475a011fd489&a=2&u=123152\'&gt;Solicitud de compañeros&lt;/a&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;');"><span class="noob">Fobos</span></a>
+
+    
+(<span class='noob'>d</span>)
+</th>
+<th width="80"> 
+<a style="cursor:pointer" onmouseover="this.T_WIDTH=250;this.T_OFFSETX=-30;this.T_OFFSETY=-30;this.T_STICKY=true;this.T_TEMP=5000;return escape('&lt;table width=\'240\'&gt;&lt;tr&gt;&lt;td class=\'c\'&gt;Alianza d_f en la posición 107 con 71 Miembro(s)&lt;/td&gt;&lt;/tr&gt;&lt;th&gt;&lt;table&gt;&lt;tr&gt;&lt;td&gt;&lt;a href=\'ainfo.php?session=475a011fd489&a=5082\'&gt;Ver página de alianza&lt;/a&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;a href=\'stat.php?session=475a011fd489&start=101&who=ally\'&gt;Ver en estadísticas&lt;/a&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;a href=\'redir.php?url=http://artelomas.superforos.com\' target=\'_new\'&gt;Página principal de la alianza&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/th&gt;&lt;/table&gt;');">
+
+   d_f </a>
+ </th>
+<th width="125" style='white-space: nowrap;'>
+<a style="cursor:pointer" onclick="javascript:doit(6, 6, 156, 15, 1, 2);"><img src="http://ogame301.de/epicblue/img/e.gif" border="0" alt="Espiar" title="Espiar" /></a>
+<a href="writemessages.php?session=475a011fd489&messageziel=123152"><img src="http://ogame301.de/epicblue/img/m.gif" border="0" alt="Escribir mensaje" title="Escribir mensaje" /></a>
+<a href="buddy.php?session=475a011fd489&a=2&u=123152"><img src="http://ogame301.de/epicblue/img/b.gif" border="0" alt="Solicitud de compañeros" title="Solicitud de compañeros" /></a>
+</th>
+</tr>
+<tr>
+<td class="c" colspan="6">(15 Planetas habitados )</td>
+<td class="c" colspan="2"><a href="#" onmouseover="this.T_WIDTH=150;return escape('&lt;table&gt;&lt;tr&gt;&lt;td class=\'c\' colspan=\'2\'&gt;Leyenda&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td width=\'125\'&gt;Jugador fuerte&lt;/td&gt;&lt;td&gt;&lt;span class=\'strong\'&gt;f&lt;/span&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;Jugador débil&lt;/td&gt;&lt;td&gt;&lt;span class=\'noob\'&gt;d&lt;/span&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;Modo vacaciones&lt;/td&gt;&lt;td&gt;&lt;span class=\'vacation\'&gt;v&lt;/span&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;Usuario suspendido&lt;/td&gt;&lt;td&gt;&lt;span class=\'banned\'&gt;s&lt;/span&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;Inactivo 7 días&lt;/td&gt;&lt;td&gt;&lt;span class=\'inactive\'&gt;i&lt;/span&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;Inactivo 28 días&lt;/td&gt;&lt;td&gt;&lt;span class=\'longinactive\'&gt;I&lt;/span&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;')">Leyenda</a></td>
+</tr>
+<tr style="display: none;" id="fleetstatusrow"><th colspan="8"><!--<div id="fleetstatus"></div>-->
+<table style="font-weight: bold;" width=100% id="fleetstatustable">
+<!-- will be filled with content later on while processing ajax replys -->
+</table>
+</th>
+</tr>
+</table>
+<!--(*) Movimiento de flotas o actividad en el planeta &nbsp;&nbsp;&nbsp;&nbsp;(g) Usuario suspendido<br>(i) Jugador 2 semanas inactivo&nbsp;&nbsp;&nbsp;    (I) Jugador 4 semanas inactivo<br>
+<font color="#ffa0a0">Jugador fuerte </font> &nbsp;&nbsp;&nbsp; <font color="#a0ffa0">Jugador débil</font><font color="#ffffff">&nbsp;&nbsp;&nbsp; <font color="#0000ff">Modo de vacaciones</font>-->
+  </center>
+  <script language="JavaScript" src="js/wz_tooltip.js"></script>
+ </body>
+</html>

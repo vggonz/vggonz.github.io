@@ -1,0 +1,161 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="cs" lang="cs">
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <link href="css/screen.css" type="text/css" rel="stylesheet" media="screen,projection" />
+    <script src="http://www.google-analytics.com/urchin.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        _uacct = "UA-88863-1";
+        urchinTracker();
+    </script>
+    <title>denibol.com :: Justify</title>
+  </head>
+  <body>
+
+    <div id="layout">
+      
+      <div id="header">
+        
+        <h1 id="logo"><a href="#"><span>Just</span>ify</a></h1>
+        <hr class="noscreen" />   
+          
+              
+        <div id="navigation">
+        <ul>
+          <li id="first"><a href="#instalacion">Instalación</a></li>
+          <li><a href="#uso">Uso</a></li>
+          <li><a href="#porque">¿Por qué?</a></li>
+	  <li><a href="#descarga">Descarga</a></li>
+        </ul>
+        </div>
+        <hr class="noscreen" />  
+    
+      </div>
+          
+        <div id="main">
+        
+        <div id="main-box">
+        <div id="quote">En mi opinión, pagar 10 euros al mes para acceder al servicio y al completo catálogo de Spotify es cantidad más que suficiente y "justificada" para poder escuchar la música que ofrecen donde yo quiera y como quiera, no donde ellos autoricen ni donde su programa funcione.</div>
+        </div>
+        
+        <div id="content">
+	<p>Non-spanish visitors can read an automagically translated versión by Google <a href="http://translate.google.com/translate?hl=es&sl=es&tl=en&u=http%3A%2F%2Fwww.denibol.com%2Fproyectos%2Fjustify%2F">here</a></p>
+
+	<script type="text/javascript"><!--
+		google_ad_client = "pub-3452115484472483";
+		google_ad_slot = "2648462653";
+		google_ad_width = 728;
+		google_ad_height = 90;
+	//-->
+	</script>
+	<script type="text/javascript" src="http://pagead2.googlesyndication.com/pagead/show_ads.js"></script>
+
+        <h2 id="instalacion">Instalación</h2>
+        <p>Justify es un programa hecho en Java, por lo que necesita una máquina virtual en su versión 1.6 o superior, así como acceso a Internet directo (sin proxies) para conectarse a los servidores de Spotify. Se garantiza que a fecha del 24 de marzo de 2011 la aplicación es compatible con el último protocolo de Spotify.
+        </p>
+       
+        <h2 id="uso">Uso</h2>
+        <p>Justify require que poseas una cuenta Premium de Spotify. Es una restricción de la propia Spotify y de todas las librerías, tanto oficiales como open-source.</p>
+	<p>Recibe 4 parámetros: <b>usuario</b>, <b>contraseña</b>, <b>dirección de Spotify</b> y <b>comando</b>. La dirección puede ser de una pista concreta, un álbum o una lista de reproducción, accesibles desde el propio Spotify a través del menú contextual (botón derecho del ratón) y seleccionando "<b>Copiar URI de Spotify</b>". En el caso de una pista descargará la canción con el formato "&lt;artista&gt; - &lt;titulo&gt;.ogg", en el caso de un álbum descargará todas las canciones en un directorio llamado "&lt;artista&gt; - &lt;titulo&gt;", y en el caso de una lista de reproducción descargará todas las canciones en un directorio llamado "&lt;creador&gt; - &lt;titulo&gt;". Por defecto todas las canciones serán descargadas con la máxima calidad disponible que en su mayoría son 320kbps. Las pistas contendrán los metadatos asociados y todas estarán en formato OGG.
+	</p><p>El comando puede contener tres valores: "download" para descargar la dirección de Spotify ya sea lista, álbum o pista, "download <número>" igual que el anterior pero especificando que la descarga debe comenzar a partir de la pista número "<número>", y "cover" para descargar la carátula asociada a la pista, álbum o lista de reproducción.
+	</p><p>
+El formato de los nombres de pistas y directorios no se puede modificar a menos que se edite el código y unas constantes para tal efecto. En futuras versiones podrá ser configurable.
+        </p>
+        
+        <h3 id="ejemplos">Ejemplos</h3>
+        
+        <table>
+          <tr class="table-top">
+	    <td>Tipo</td>
+            <td>Comando</td>
+            <td>Efecto</td>
+          </tr>
+          <tr>
+	    <td>Canción</td>
+            <td>java -jar Justify.jar &lt;usuario&gt; &lt;contraseña&gt; spotify:track:0tP5ogrxKrIPKHHc0seuOr download</td>
+            <td>Descarga la canción en el directorio actual con el nombre "U2 - With Or Without You.ogg"</td>
+          </tr>
+          <tr>
+	    <td>Álbum</td>
+            <td>java -jar Justify.jar &lt;usuario&gt; &lt;contraseña&gt; spotify:album:0cn6MHyx4YuZauaB7Pb66o download</td>
+            <td>Crea el directorio "System Of A Down - Mesmerize" en el directorio actual y descarga cada canción dentro con el mismo formato que cualquier otra</td>
+          </tr>
+          <tr>
+	    <td>Lista de reproducción</td>
+            <td>java -jar Justify.jar &lt;usuario&gt; &lt;contraseña&gt; spotify:user:vyett:playlist:5bfFtYw2H4TU82eQzkgWQ3 download (elegida aleatoriamente de http://spotifyplaylists.co.uk)</td>
+            <td>Crea el directorio "vyett - Cellectro" en el directorio actual y descarga cada canción dentro con el mismo formato que cualquier otra</td>
+          </tr>
+          </table>
+        
+	<h2 id="porque">¿Por qué?</h2>
+	<p>Desde que se realizó ingeniería inversa del protocolo de Spotify, era cuestión de tiempo que alguien creara un programa que directamente descargase canciones. Los propios creadores de la librería Despotify, desaconsejan la creación de estos programas que pueden dañar a la empresa. Sin embargo yo no estoy de acuerdo. Se sigue necesitando una cuenta Premium para ello y eso siempre acaba benefiando. Los más perjudicados son legalmente las compañías discográficas que ven como el DRM de Spotify no sirve de nada, y 7digital, que no realizará las ventas esperadas. En mi opinión, pagar 10 euros al mes para acceder al servicio y al completo catálogo de Spotify es cantidad más que suficiente y "justificada" para poder escuchar la música que ofrecen donde yo quiera y como quiera, no donde ellos autoricen ni donde su programa funcione.</p>
+	<p>Para más información acerca del porqué, los autores de Despotify tienen un FAQ muy completo (en inglés): <a href="http://despotify.se/faq/">http://despotify.se/faq/</a></p>
+ 
+	<h2 id="descarga">Descarga</h2>
+	<ul>
+		<li><a href="Justify-0.6-bin.zip">Justify 0.6</a> (ejecutable)</li>
+		<li><a href="Justify-0.6-src.zip">Justify 0.6</a> (código fuente)</li>
+	</ul>
+	<p>Las líneas futuras (si las hay) contemplarán una interfaz gráfica donde poder buscar y visualizar los álbumes y listas de reproducción del usuario, y la flexibilidad a la hora de configurar la aplicación.</p>
+
+	<script type="text/javascript"><!--
+		google_ad_client = "pub-3452115484472483";
+		google_ad_slot = "2648462653";
+		google_ad_width = 728;
+		google_ad_height = 90;
+	//-->
+	</script>
+	<script type="text/javascript" src="http://pagead2.googlesyndication.com/pagead/show_ads.js"></script>
+
+	<h2 id="changelog">Lista de cambios</h2>
+	<ul>
+		<li>v0.1 (2010-02-28)</li>
+		<ul>
+			<li>Versión inicial</li>
+		</ul>
+		<li>v0.2 (2010-03-11)</li>
+		<ul>
+			<li>Adaptado el código para la última versión de Jotify con fecha del 23 de febrero del 2010 y protocolo de Spotify</li>
+		</ul>
+		<li>v0.3 (2010-08-26)</li>
+		<ul>
+			<li>Integración de la librería Jotify en el código (actualmente abandonado)</li>
+			<li>Adaptado a la última versión del protocolo de Spotify</li>
+		</ul>
+		<li>v0.4 (2011-03-24)</li>
+		<ul>
+			<li>Corregido un fallo al descargar listas de reproducción</li>
+		</ul>
+		<li>v0.5 (2011-10-27) por <a href="http://klaxnek.tumblr.com/">Klaxnek</a></li>
+		<ul>
+			<li>Adaptado a la última versión del protocolo de Spotify</li>
+			<li>Añadida la opción para descargar carátulas</li>
+			<li>Integración con la librería <a href="http://www.jthink.net/jaudiotagger/">JAudioTagger</a> <a href="https://maven.java.net/content/repositories/snapshots/net/jthink/jaudiotagger/2.0.4-SNAPSHOT/jaudiotagger-2.0.4-20110922.152428-14.jar">2.0.4</a> para añadir los metadatos asociados a las canciones</li>
+		</ul>
+		<li>v0.6 (2011-11-20) por <a href="http://klaxnek.tumblr.com/">Klaxnek</a></li>
+		<ul>
+			<li>Cambio de la librería JAudioTagger a <a href="https://sites.google.com/site/cruxic/jvorbiscomment">JVorbisComment</a></li>
+			<li>Adaptado a la última versión del protocolo de Spotify</li>
+			<li>Cambio en el nombre de las carátulas por "folder.jpg"</li>
+		</ul>
+	</ul>
+
+	<!--h2 id="knownbugs">Errores conocidos</h2>
+	<ul>
+		<li></li>
+	</ul-->
+ 
+	<h2 id="creditos">Agradecimientos y créditos</h2>
+	<p>Todo el mérito va para los autores de <a href="http://despotify.se/">Despotify</a>, que consiguieron realizar ingeniería inversa del protocolo y realizar una implementación libre. Realmente es fascinante lo que han conseguido y estudiando su código no tengo más que rendirme ante su habilidad. También gran parte del mérito va para Felix Bruns, que ha portado la librería a la plataforma Java y sobre la que descansa Justify.</p>
+	<p>También tengo que agradecer especialmente a <a href="http://klaxnek.tumblr.com/">Klaxnek</a> por mantener el código y añadir nuevas funcionalides en las últimas versiones.</p>
+	<p>Si te gusta Spotify, paga por él. Yo lo hago.</p>
+
+        </div>
+        
+        <div id="footer">
+        <p id="copyright">&copy; 2011 - <a href="http://www.denibol.com">Denibol</a></p>
+        
+        <!-- Please don't delete this. You can use this template for free and this is the only way that you can say thanks to me -->
+          <p id="dont-delete-this">Design by <a href="http://www.davidkohout.cz">David Kohout</a></p>
+	</div>
+</body></html>

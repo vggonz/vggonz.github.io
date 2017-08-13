@@ -1,0 +1,82 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+	<title>denibol.com :: Travian World</title>
+	<script src="http://www.google-analytics.com/urchin.js" type="text/javascript"></script>
+	<script type="text/javascript">
+		_uacct = "UA-88863-1";
+		urchinTracker();
+	</script>
+</head>
+<body>
+<h2>Travian World</h2>
+<p>Conjunto de aplicaciones basadas en el fichero <b>map.sql</b> que proporciona al publico el juego de navegador <a href="http://www.travian.net">Travian</a>:</p>
+<ul>
+	<li>Acceso a base de datos
+		<ul>
+			<li>Herramientas genericas</li>
+			<li><a href="include/db_mysql.phps">Fuente</a> del acceso a MySQL</li>
+			<li><a href="include/conf.phps">Fuente</a> de la configuracion de la BD y parametros globales</li>
+		</ul>
+	</li>
+	<li>Indexacion en base de datos
+		<ul>
+			<li>Tarea de Crontab de madrugada</li>
+			<li>Procesa el map.sql de los servidores s1.travian.net, s2.travian.net y s3.travian.net</li>
+			<li>Mantiene historico de la ultima semana</li>
+			<li><a href="travian_map_index.phps">Fuente</a></li>
+			<li><a href="x_world.sql">Descripcion SQL</a> de la tabla x_world</li>
+			<li><a href="servidor.sql">Descripcion SQL</a> de la tabla de cualquier servidor procesado</li>
+	</li>
+	<li>Grafica de crecimiento
+		<ul>
+			<li>Muestra la grafica de una aldea, usuario o alianza</li>
+			<li>Realiza cache de la imagen durante 12 horas</li>
+			<li>Configurable por GET: parametro "server" y parametros "id" (aldea), "uid" (jugador) o "aid" (alianza)</li>
+			<li>Ejemplo de aldea: <a target="_blank" href="stat2.php?server=s1.travian.net&id=47628">stat2.php?server=s1.travian.net&id=47628</a></li>
+			<li>Ejemplo de jugador: <a target="_blank" href="stat2.php?server=s1.travian.net&uid=58760">stat2.php?server=s1.travian.net&uid=58760</a></li>
+			<li>Ejemplo de alianza: <a target="_blank" href="stat2.php?server=s1.travian.net&aid=1809">stat2.php?server=s1.travian.net&aid=1809</a></li>
+			<li>Uso de "mod_rewrite" para enmascarar bajo imagen como <a target="_blank" href="stat-net1-uid-58760.png">stat-net1-uid-58760.png</a></li>
+			<li>Integrado en <a href="http://www.denibol.com/proyectos/travian_beyond/">Travian Beyond</a></li>
+			<li><a href="stat.phps">Fuente</a> de la version basada en la libreria <a href="http://www.aditus.nu/jpgraph/">JPGraph</a></li>
+			<li><a href="stat2.phps">Fuente</a> de la nueva version optimizada</li>
+			<li><a href="include/graph.phps">Fuente</a> de la libreria de graficas optimizada para Travian (gracias a rub3n)</li>
+			<li><a href=".htaccess">Fuente</a> del fichero .htaccess para la configuracion de "mod_rewrite"</li>
+		</ul>
+	</li>
+	<li>Mapa Extendido
+		<ul>
+			<li>Mapa de 13x13 al estilo del Plus</li>
+			<li>Informacion sobre accidentes orograficos no disponible</li>
+			<li>Configurable por GET o POST: parametro "server" obligatorio y opcional entre "id" o "xp" e "yp"</li>
+			<li>Parametros UID (Identificador de usuario) y WID (Identificador de alianza en guerra) opcionales par colorear las casillas del mapa</li>
+			<li>Ejemplo por ID: <a target="_blank" href="karte2.php?server=s1.travian.net&id=131239">karte2.php?server=s1.travian.net&id=131239</a></li>
+			<li>Ejemplo por coordenadas: <a target="_blank" href="karte2.php?server=s1.travian.net&xp=0&yp=0">karte2.php?server=s1.travian.net&xp=0&yp=0</a></li>
+			<li>Almacena en cookies los valores permanentes como el servidor y la constante de desplazamiento</li>
+			<li>Tema grafico adaptado a Travian3</li>
+			<li>Integrado en <a href="http://www.denibol.com/proyectos/travian_beyond/">Travian Beyond</a></li>
+			<li><a href="karte2.phps">Fuente</a> para Travian</li>
+			<li><a href="karte3.phps">Fuente</a> para Travian3</li>
+		</ul>
+	</li>
+	<li>Buscador de valles
+		<ul>
+			<li>Busqueda de valles con cualquier configuracion de barro, metal, madera y cereal</li>
+			<li>Ejecucion desde linea de comandos</li>
+			<li>Necesita la cookie de sesion: TB para Travian y T3E para Travian3</li>
+			<li>Ejemplo: "<i>php casillas.php valorcookie -248 166 -242 160 s1.travian.net</i>" indizaria el rectangulo de 7x7 formado por los extremos <nobr>(-248, 166)</nobr> y <nobr>(-242, 160)</nobr> en el servidor s1.travian.net
+			<li><a href="casillas3.phps">Fuente</a> para Travian3</li>
+			<li><a href="casillas.phps">Fuente</a> para Travian</li>
+			<li><a href="recursos.sql">Descripcion SQL</a> de la tabla para almacenar la configuracion de los valles</li>
+		</ul>
+	</li>
+	<li>Buscador de inactivos
+		<ul>
+			<li>Busqueda parametrizada por: nombre de usuario, nombre de aldea, nombre de alianza, numero de habitantes y posicion en el mapa</li>
+			<li>Resultados ordenados y paginados</li>
+			<li><s>Fuente</s> WIP (Work In Progress)</li>
+		</ul>
+	</li>
+</ul>
+</body>
+</html>

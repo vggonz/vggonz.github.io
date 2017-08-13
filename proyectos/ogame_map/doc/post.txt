@@ -1,0 +1,13 @@
+POST /game/galaxy.php?session=0b9bda3f7654 HTTP/1.1
+User-Agent: Opera/9.00 (X11; Linux i686; U; en)
+Host: ogame364.de
+Accept: text/html, application/xml;q=0.9, application/xhtml+xml, image/png, image/jpeg, image/gif, image/x-xbitmap, */*;q=0.1
+Accept-Language: en,es;q=0.9
+Accept-Encoding: deflate, gzip, x-gzip, identity, *;q=0
+Referer: http://ogame364.de/game/galaxy.php?session=0b9bda3f7654
+Cookie: vc2=1139251940; AMA=1139236363; PHPSESSID=bd1c9931bed2e412a6f5c1d292dd4fcc; U_es26:Croc=U_es26%3ACroc
+Cookie2: $Version=1
+Connection: Keep-Alive, TE
+TE: deflate, gzip, chunked, identity, trailers
+Content-Length: 40
+Content-Type: application/x-www-form-urlencoded

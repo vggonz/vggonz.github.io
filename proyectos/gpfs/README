@@ -1,0 +1,37 @@
+
+gpfs is a virtual filesystem for a gp32. It is based on the gp32 linking tool
+from Mike Dawson (http://dexy.mine.nu/gp32/)
+
+Requirements: Set up usbdevfs: http://www.linux-usb.org/USB-guide/x173.html
+When you plug in and switch on your gp32 you should see an extra entry appear
+under /proc/bus/usb/<bus number>/
+
+Permissions: For gpfs to be able to access the usb bus you need to either:
+a) set permissions on usbdevfs to 0666 using an fstab entry like: none
+/proc/bus/usb usbdevfs devmode=0666 0 0 b) use gpfs as root, or c) use
+something like linux hotplug (http://linux-hotplug.sourceforge.net) to manage
+the permissions.
+
+To build gpfs requires libusb (http://libusb.sourceforge.net) and FUSE
+(http://fuse.sourceforge.net). Under Debian you can 'apt-get 
+install libusb-dev libfuse-dev' and manually compile the fuse module for your 
+kernel.
+
+Sorry for my hardcoded paths and libs in the Makefile and the sources. First
+check the Makefile for your desired install paths (defaults in /usr/bin/) and
+the source file 'gpfs.c' if your 'fusermount' is in a different place different
+from '/usr/bin/fusermount'
+
+Then run 'make' and 'make install' as root.
+
+You can run 'gpfs' followed by the mount point or for automatic mounting, 
+add something like this to your /etc/fstab:
+
+ /proc/fs/fuse/dev   /mnt/gp32   gpfs   defaults,user   0 0
+ 
+And make sure fusermount has the bit suid with 'chmod u+s /usr/bin/fusermount'
+
+Error recovery isn't too good yet.  If an operation doesn't work you
+might have to switch your gp32 off and on for the link command to start
+working again.
+

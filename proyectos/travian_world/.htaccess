@@ -1,0 +1,6 @@
+<IfModule mod_rewrite.c>
+	RewriteEngine on
+	RewriteRule ^stat-([a-z0-9]+)-([a-z]+)-([0-9]+).png$ stat2.php?server=$1&$2=$3&out=png
+	RewriteRule ^stat-([a-z0-9]+)-([a-z]+)-([0-9]+).gif$ stat2.php?server=$1&$2=$3&out=gif
+#	RewriteRule ^stat-([a-z0-9]+)-([a-z]+)-([0-9]+).jpg$ stat2.php?server=$1&$2=$3&out=jpeg
+</IfModule>

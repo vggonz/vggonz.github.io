@@ -1,0 +1,29 @@
+body,td,th {
+	font-family: Geneva, Arial, Helvetica, sans-serif;
+	font-size: 14px;
+}
+body {
+	background-color: #EEEFE9;
+}
+a {
+	font-family: Geneva, Arial, Helvetica, sans-serif;
+	color: #006600;
+	font-weight: bold;
+}
+a:link {
+	text-decoration: none;
+}
+a:visited {
+	text-decoration: none;
+}
+a:hover {
+	text-decoration: none;
+	color: #009966;
+}
+a:active {
+	text-decoration: none;
+}
+.style1 {
+	font-size: 14px;
+	font-weight: bold;
+}
